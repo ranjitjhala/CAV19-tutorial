@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <title>Language-Integrated Verification</title>
+
+    <link href="./css/bootstrap.css" rel="stylesheet">
+    <link href="./css/bootstrap-theme.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="./css/rust-book-slides.css">
+    <link rel="stylesheet" type="text/css" href="./css/editor-slides.css">
+    <link rel="stylesheet" type="text/css" href="./css/code-format.css">
+    <link rel="stylesheet" type="text/css" href="./css/slideshow.css">
+    <style>
+      body {
+        text-align: center;
+      }
+      .mybreak {
+        line-height: 1em;
+      }
+      table {
+        margin-left: 150px;
+        margin-right: auto;
+      }
+    </style>
+
+    <!-- JQUERY MOBILE -->
+
+    <!-- Include jQuery Mobile stylesheets -->
+
+    <!-- Include the jQuery library -->
+     <!-- <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script> -->
+     <script src="./js/jquery/jquery-1.11.3.min.js"></script>
+     <script src="./js/jquery/init-mobile.js"></script>
+
+     <!-- Include the jQuery Mobile library -->
+     <!-- <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script> -->
+     <script src="./js/jquery/jquery.mobile-1.4.5.min.js"></script>
+
+<!-- JQUERY LOCAL
+
+<script type="text/javascript" src="./js/jquery/jquery-2.0.3.min.js"></script>
+
+-->
+
+
+
+<script type="text/javascript" src="./js/angular/angular.js"></script>
+<script type="text/javascript" src="./js/bootstrap/bootstrap.js"></script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: {
+    extensions: ["color.js"],
+    Macros: {
+      True: "\\mathit{True}",
+      RR:   "{\\bf R}",
+      Int:  "\\mathtt{Int}",
+      Nat:  "\\mathtt{Nat}",
+      Zero: "\\mathtt{Zero}",
+      foo:   ["{\\bf Jhala FOO #1}", 1],
+      kvar:  ["{\\color[rgb]{1,0,0}{K_{#1}({#2})}}", 2],
+      bindx: ["{{#1}\\!:\\!{#2}}", 2],
+      reft:  ["\\{\\bindx{#1}{#2} \\mid {#3}\\}", 3],
+      ereft: ["\\bindx{#1}{\\{#2 \\mid #3\\}}", 3],
+      reftx: ["\\{{#1}\\mid{#2}\\}", 2],
+      inferrule: ["\\frac{#2}{#3}\\;{#1}", 3]
+  }
+  }
+});
+</script>
+
+<!-- GITHUB
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+-->
+
+<!-- LOCAL -->
+<script src="js/MathJax-2.6.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+
+</head>
+
+<body class="rustdoc" data-spy="scroll" data-target=".bs-docs-sidebar" ng-app="liquidDemo" ng-controller="LiquidDemoCtrl">
+
+
+
+  <div id="nav">
+
+        <button class="btn btn-xs btn-link actbutton firstbutton" type="button" style="font-size:15px; color:black; z-index:1">
+          <span class="glyphicon glyphicon-backward"></span>
+        </button>
+
+        <button class="btn btn-xs btn-link actbutton prevbutton" type="button" style="font-size:15px; color:black;  z-index:1">
+          <span class="glyphicon glyphicon-chevron-left"></span>
+        </button>
+
+        <button id="toggle-nav" class="toggle-nav">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+
+        <button class="btn btn-xs btn-link actbutton nextbutton" type="button" style="font-size:15px; color:black; z-index:1">
+          <span class="glyphicon glyphicon-chevron-right"></span>
+        </button>
+
+        <button class="btn btn-xs btn-link actbutton lastbutton" type="button" style="font-size:15px; color:black; z-index:1">
+          <span class="glyphicon glyphicon-forward"></span>
+        </button>
+
+  </div>
+
+<div id='toc' class='mobile-hidden'>
+<ul class='chapter'>
+<li><a href='03-examples.html'><b>1.</b>Refinement Types by Example</a></li>
+<ul class='section'>
+<li><a href='03-examples.html#refinement-types-by-example-1'><b>1.1.</b> Refinement Types by Example</a></li>
+<li><a href='03-examples.html#refinement-types-by-example-2'><b>1.2.</b> Refinement Types by Example</a></li>
+<li><a href='03-examples.html#refinement-types-by-example-3'><b>1.3.</b> Refinement Types by Example</a></li>
+<li><a href='03-examples.html#specifications-pre-conditions'><b>1.4.</b> Specifications: Pre-Conditions</a></li>
+<li><a href='03-examples.html#specifications-post-conditions'><b>1.5.</b> Specifications: Post-Conditions</a></li>
+<li><a href='03-examples.html#refinement-types-by-example-4'><b>1.6.</b> Refinement Types by Example</a></li>
+<li><a href='03-examples.html#verification-vector-sum'><b>1.7.</b> Verification: Vector Sum</a></li>
+<li><a href='03-examples.html#verification-vector-sum-1'><b>1.8.</b> Verification: Vector Sum</a></li>
+<li><a href='03-examples.html#verification-vector-sum-2'><b>1.9.</b> Verification: Vector Sum</a></li>
+<li><a href='03-examples.html#refinement-types-by-example-5'><b>1.10.</b> Refinement Types by Example</a></li>
+<li><a href='03-examples.html#inference'><b>1.11.</b> Inference</a></li>
+<li><a href='03-examples.html#inference-vector-sum'><b>1.12.</b> Inference: Vector Sum</a></li>
+<li><a href='03-examples.html#inference-vector-sum-1'><b>1.13.</b> Inference: Vector Sum</a></li>
+<li><a href='03-examples.html#inference-vector-sum-2'><b>1.14.</b> Inference: Vector Sum</a></li>
+<li><a href='03-examples.html#inference-vector-sum-3'><b>1.15.</b> Inference: Vector Sum</a></li>
+<li><a href='03-examples.html#inference-vector-sum-4'><b>1.16.</b> Inference: Vector Sum</a></li>
+<li><a href='03-examples.html#inference-vector-sum-5'><b>1.17.</b> Inference: Vector Sum</a></li>
+<li><a href='03-examples.html#refinement-types-by-example-6'><b>1.18.</b> Refinement Types by Example</a></li>
+<li><a href='03-examples.html#collections-higher-order-functions'><b>1.19.</b> Collections &amp; Higher-Order Functions</a></li>
+<li><a href='03-examples.html#collections-higher-order-functions-1'><b>1.20.</b> Collections &amp; Higher-Order Functions</a></li>
+<li><a href='03-examples.html#collections-higher-order-functions-2'><b>1.21.</b> Collections &amp; Higher-Order Functions</a></li>
+<li><a href='03-examples.html#collections-higher-order-functions-3'><b>1.22.</b> Collections &amp; Higher-Order Functions</a></li>
+<li><a href='03-examples.html#refinement-types-by-example-7'><b>1.23.</b> Refinement Types by Example</a></li>
+<li><a href='03-examples.html#example-list-average'><b>1.24.</b> Example: List <code>average</code></a></li>
+<li><a href='03-examples.html#refinements-for-datatypes'><b>1.25.</b> Refinements for Datatypes</a></li>
+<li><a href='03-examples.html#measures-yield-refined-constructors'><b>1.26.</b> Measures Yield Refined Constructors</a></li>
+<li><a href='03-examples.html#example-map-over-lists'><b>1.27.</b> Example: <code>map</code> over Lists</a></li>
+<li><a href='03-examples.html#refinements-for-datatypes-1'><b>1.28.</b> Refinements for Datatypes</a></li>
+<li><a href='03-examples.html#refinements-for-datatypes-2'><b>1.29.</b> Refinements for Datatypes</a></li>
+<li><a href='03-examples.html#refinements-for-datatypes-3'><b>1.30.</b> Refinements for Datatypes</a></li>
+<li><a href='03-examples.html#refinement-types-by-example-8'><b>1.31.</b> Refinement Types by Example</a></li>
+<li><a href='03-examples.html#outline'><b>1.32.</b> Outline</a></li>
+<li><a href='03-examples.html#outline-1'><b>1.33.</b> Outline</a></li>
+</ul>
+<li><a href='02-refinements.html'><b>2.</b>Simple Refinement Types</a></li>
+<ul class='section'>
+<li><a href='02-refinements.html#types'><b>2.1.</b> Types</a></li>
+<li><a href='02-refinements.html#predicates'><b>2.2.</b> Predicates</a></li>
+<li><a href='02-refinements.html#predicates-1'><b>2.3.</b> Predicates</a></li>
+<li><a href='02-refinements.html#predicates-2'><b>2.4.</b> Predicates</a></li>
+<li><a href='02-refinements.html#predicates-3'><b>2.5.</b> Predicates</a></li>
+<li><a href='02-refinements.html#predicates-4'><b>2.6.</b> Predicates</a></li>
+<li><a href='02-refinements.html#example-singletons'><b>2.7.</b> Example: Singletons</a></li>
+<li><a href='02-refinements.html#example-natural-numbers'><b>2.8.</b> Example: Natural Numbers</a></li>
+<li><a href='02-refinements.html#a-term-can-have-many-types'><b>2.9.</b> A Term Can Have <em>Many</em> Types</a></li>
+<li><a href='02-refinements.html#predicate-subtyping-nuprl-pvs'><b>2.10.</b> 1. Predicate Subtyping <a href="http://pvs.csl.sri.com/papers/subtypes98/tse98.pdf">[NUPRL, PVS]</a></a></li>
+<li><a href='02-refinements.html#predicate-subtyping-nuprl-pvs-1'><b>2.11.</b> 1. Predicate Subtyping <a href="http://pvs.csl.sri.com/papers/subtypes98/tse98.pdf">[NUPRL, PVS]</a></a></li>
+<li><a href='02-refinements.html#predicate-subtyping-nuprl-pvs-2'><b>2.12.</b> 1. Predicate Subtyping <a href="http://pvs.csl.sri.com/papers/subtypes98/tse98.pdf">[NUPRL, PVS]</a></a></li>
+<li><a href='02-refinements.html#example-natural-numbers-1'><b>2.13.</b> Example: Natural Numbers</a></li>
+<li><a href='02-refinements.html#example-natural-numbers-2'><b>2.14.</b> Example: Natural Numbers</a></li>
+<li><a href='02-refinements.html#typing-applications-function-calls'><b>2.15.</b> 2. Typing Applications (Function Calls)</a></li>
+<li><a href='02-refinements.html#typing-applications-function-calls-1'><b>2.16.</b> 2. Typing Applications (Function Calls)</a></li>
+<li><a href='02-refinements.html#typing-applications-function-calls-2'><b>2.17.</b> 2. Typing Applications (Function Calls)</a></li>
+<li><a href='02-refinements.html#typing-applications-function-calls-3'><b>2.18.</b> 2. Typing Applications (Function Calls)</a></li>
+<li><a href='02-refinements.html#recap-refinement-types-101'><b>2.19.</b> Recap: Refinement Types 101</a></li>
+<li><a href='02-refinements.html#recap-refinement-types-101-1'><b>2.20.</b> Recap: Refinement Types 101</a></li>
+<li><a href='02-refinements.html#recap-refinement-types-101-2'><b>2.21.</b> Recap: Refinement Types 101</a></li>
+<li><a href='02-refinements.html#outline'><b>2.22.</b> Outline</a></li>
+<li><a href='02-refinements.html#outline-1'><b>2.23.</b> Outline</a></li>
+</ul>
+<li><a href='05-reflection.html'><b>3.</b>Types as Theorems, Programs as Proofs</a></li>
+<ul class='section'>
+<li><a href='05-reflection.html#types-as-theorems'><b>3.1.</b> Types As Theorems</a></li>
+<li><a href='05-reflection.html#types-as-theorems-example'><b>3.2.</b> Types as Theorems: Example</a></li>
+<li><a href='05-reflection.html#programs-as-proofs-example'><b>3.3.</b> Programs As Proofs: Example</a></li>
+<li><a href='05-reflection.html#types-as-theorems-1'><b>3.4.</b> Types As Theorems</a></li>
+<li><a href='05-reflection.html#types-as-theorems-example-1'><b>3.5.</b> Types as Theorems: Example</a></li>
+<li><a href='05-reflection.html#programs-as-proofs-example-1'><b>3.6.</b> Programs As Proofs: Example</a></li>
+<li><a href='05-reflection.html#types-as-theorems-programs-as-proofs-1'><b>3.7.</b> Types as Theorems, Programs as Proofs</a></li>
+<li><a href='05-reflection.html#those-proofs-were-boring'><b>3.8.</b> Those Proofs were Boring</a></li>
+<li><a href='05-reflection.html#those-proofs-were-boring-1'><b>3.9.</b> Those Proofs were Boring</a></li>
+<li><a href='05-reflection.html#theorems-about-functions'><b>3.10.</b> Theorems about Functions</a></li>
+<li><a href='05-reflection.html#refinement-reflection'><b>3.11.</b> Refinement Reflection</a></li>
+<li><a href='05-reflection.html#reflect-function-into-output-type'><b>3.12.</b> Reflect Function into Output Type</a></li>
+<li><a href='05-reflection.html#reflect-function-into-output-type-1'><b>3.13.</b> Reflect Function into Output Type</a></li>
+<li><a href='05-reflection.html#reflection-at-result-type'><b>3.14.</b> Reflection at Result Type</a></li>
+<li><a href='05-reflection.html#structuring-proofs-as-calculations'><b>3.15.</b> Structuring Proofs as Calculations</a></li>
+<li><a href='05-reflection.html#types-as-theorems-programs-as-proofs-2'><b>3.16.</b> Types as Theorems, Programs as Proofs</a></li>
+<li><a href='05-reflection.html#reusing-proofs-functions-as-lemmas'><b>3.17.</b> Reusing Proofs: Functions as Lemmas</a></li>
+<li><a href='05-reflection.html#reusing-proofs-functions-as-lemmas-1'><b>3.18.</b> Reusing Proofs: Functions as Lemmas</a></li>
+<li><a href='05-reflection.html#reusing-proofs-functions-as-lemmas-2'><b>3.19.</b> Reusing Proofs: Functions as Lemmas</a></li>
+<li><a href='05-reflection.html#types-as-theorems-programs-as-proofs-3'><b>3.20.</b> Types as Theorems, Programs as Proofs</a></li>
+<li><a href='05-reflection.html#types-as-theorems-programs-as-proofs-4'><b>3.21.</b> Types as Theorems, Programs as Proofs</a></li>
+<li><a href='05-reflection.html#proof-by-logical-evaluation'><b>3.22.</b> Proof by Logical Evaluation</a></li>
+<li><a href='05-reflection.html#proof-by-logical-evaluation-1'><b>3.23.</b> Proof by Logical Evaluation</a></li>
+<li><a href='05-reflection.html#proof-by-logical-evaluation-2'><b>3.24.</b> Proof by Logical Evaluation</a></li>
+<li><a href='05-reflection.html#proof-by-induction'><b>3.25.</b> Proof by Induction</a></li>
+<li><a href='05-reflection.html#proof-by-induction-1'><b>3.26.</b> Proof by Induction</a></li>
+<li><a href='05-reflection.html#proof-by-induction-2'><b>3.27.</b> Proof by Induction</a></li>
+<li><a href='05-reflection.html#types-as-theorems-programs-as-proofs-5'><b>3.28.</b> Types as Theorems, Programs as Proofs</a></li>
+<li><a href='05-reflection.html#types-as-theorems-programs-as-proofs-6'><b>3.29.</b> Types as Theorems, Programs as Proofs</a></li>
+<li><a href='05-reflection.html#types-as-theorems-programs-as-proofs-7'><b>3.30.</b> Types as Theorems, Programs as Proofs</a></li>
+<li><a href='05-reflection.html#theorems-about-data'><b>3.31.</b> Theorems about Data</a></li>
+<li><a href='05-reflection.html#theorems-about-data-associativity-of-append'><b>3.32.</b> Theorems about Data: Associativity of <code>append</code></a></li>
+<li><a href='05-reflection.html#case-study-mapreduce'><b>3.33.</b> Case Study: MapReduce</a></li>
+<li><a href='05-reflection.html#case-study-mapreduce-1'><b>3.34.</b> Case Study: MapReduce</a></li>
+<li><a href='05-reflection.html#reduce-theorem'><b>3.35.</b> Reduce Theorem</a></li>
+<li><a href='05-reflection.html#types-as-theorems-programs-as-proofs-8'><b>3.36.</b> Types as Theorems, Programs as Proofs</a></li>
+<li><a href='05-reflection.html#outline'><b>3.37.</b> Outline</a></li>
+<li><a href='05-reflection.html#outline-1'><b>3.38.</b> Outline</a></li>
+</ul>
+<li><a href='01-intro.html'><b>4.</b>Follow Along at This URL</a></li>
+<ul class='section'>
+<li><a href='01-intro.html#whats-this'><b>4.1.</b> Whats this?</a></li>
+<li><a href='01-intro.html#the-first-bug'><b>4.2.</b> The First <em>Bug</em></a></li>
+<li><a href='01-intro.html#fast-forward-to-present-day'><b>4.3.</b> Fast forward to Present Day</a></li>
+<li><a href='01-intro.html#fast-forward-to-present-day-1'><b>4.4.</b> Fast forward to Present Day</a></li>
+<li><a href='01-intro.html#fast-forward-to-present-day-2'><b>4.5.</b> Fast forward to Present Day</a></li>
+<li><a href='01-intro.html#programming-languages-research'><b>4.6.</b> Programming Languages Research</a></li>
+<li><a href='01-intro.html#modern-languages'><b>4.7.</b> Modern Languages</a></li>
+<li><a href='01-intro.html#modern-languages-1'><b>4.8.</b> Modern Languages</a></li>
+<li><a href='01-intro.html#modern-languages-2'><b>4.9.</b> Modern Languages</a></li>
+<li><a href='01-intro.html#modern-languages-3'><b>4.10.</b> Modern Languages?</a></li>
+<li><a href='01-intro.html#well-typed-programs-can-go-very-wrong'><b>4.11.</b> Well-typed programs can go very wrong!</a></li>
+<li><a href='01-intro.html#well-typed-programs-can-go-very-wrong-1'><b>4.12.</b> Well-typed programs can go very wrong!</a></li>
+<li><a href='01-intro.html#well-typed-programs-can-go-very-wrong-2'><b>4.13.</b> Well-typed programs can go very wrong!</a></li>
+<li><a href='01-intro.html#goal-language-integrated-verification'><b>4.14.</b> Goal: Language-Integrated Verification</a></li>
+<li><a href='01-intro.html#goal-language-integrated-verification-1'><b>4.15.</b> Goal: Language-Integrated Verification</a></li>
+<li><a href='01-intro.html#outline'><b>4.16.</b> Outline</a></li>
+<li><a href='01-intro.html#outline-1'><b>4.17.</b> Outline</a></li>
+<li><a href='01-intro.html#outline-2'><b>4.18.</b> Outline</a></li>
+<li><a href='01-intro.html#outline-3'><b>4.19.</b> Outline</a></li>
+<li><a href='01-intro.html#outline-4'><b>4.20.</b> Outline</a></li>
+<li><a href='01-intro.html#outline-5'><b>4.21.</b> Outline</a></li>
+</ul>
+<li><a href='04-termination.html'><b>5.</b>Avoiding Infinite Loops</a></li>
+<ul class='section'>
+<li><a href='04-termination.html#example-proving-termination-of-sum'><b>5.1.</b> Example: Proving Termination of <code>sum</code></a></li>
+<li><a href='04-termination.html#proving-termination'><b>5.2.</b> Proving Termination</a></li>
+<li><a href='04-termination.html#proving-termination-1'><b>5.3.</b> Proving Termination</a></li>
+<li><a href='04-termination.html#proving-termination-2'><b>5.4.</b> Proving Termination</a></li>
+<li><a href='04-termination.html#proving-termination-3'><b>5.5.</b> Proving Termination</a></li>
+<li><a href='04-termination.html#example-proving-termination-of-sum-1'><b>5.6.</b> Example: Proving Termination of <code>sum</code></a></li>
+<li><a href='04-termination.html#user-specified-termination-metrics'><b>5.7.</b> User Specified Termination Metrics</a></li>
+<li><a href='04-termination.html#user-specified-termination-metrics-1'><b>5.8.</b> User Specified Termination Metrics</a></li>
+<li><a href='04-termination.html#user-specified-termination-metrics-2'><b>5.9.</b> User Specified Termination Metrics</a></li>
+<li><a href='04-termination.html#proving-termination-4'><b>5.10.</b> Proving Termination</a></li>
+<li><a href='04-termination.html#lexicographic-termination'><b>5.11.</b> Lexicographic Termination</a></li>
+<li><a href='04-termination.html#how-about-data-types'><b>5.12.</b> How About Data Types?</a></li>
+<li><a href='04-termination.html#user-specified-metrics-on-data-types'><b>5.13.</b> User specified metrics on Data Types</a></li>
+<li><a href='04-termination.html#termination-can-be-tricky'><b>5.14.</b> Termination Can be Tricky</a></li>
+<li><a href='04-termination.html#avoiding-infinite-loops-1'><b>5.15.</b> Avoiding Infinite Loops</a></li>
+<li><a href='04-termination.html#avoiding-infinite-loops-2'><b>5.16.</b> Avoiding Infinite Loops</a></li>
+<li><a href='04-termination.html#avoiding-infinite-loops-3'><b>5.17.</b> Avoiding Infinite Loops</a></li>
+<li><a href='04-termination.html#avoiding-infinite-loops-4'><b>5.18.</b> Avoiding Infinite Loops</a></li>
+<li><a href='04-termination.html#avoiding-infinite-loops-is-easy-in-practice'><b>5.19.</b> Avoiding Infinite Loops is Easy (in Practice)</a></li>
+<li><a href='04-termination.html#avoiding-infinite-loops-is-easy-in-practice-1'><b>5.20.</b> Avoiding Infinite Loops is Easy (in Practice)</a></li>
+<li><a href='04-termination.html#avoiding-infinite-loops-is-easy-in-practice-2'><b>5.21.</b> Avoiding Infinite Loops is Easy (in Practice)</a></li>
+<li><a href='04-termination.html#avoiding-infinite-loops-is-easy-in-practice-3'><b>5.22.</b> Avoiding Infinite Loops is Easy (in Practice)</a></li>
+<li><a href='04-termination.html#outline'><b>5.23.</b> Outline</a></li>
+<li><a href='04-termination.html#outline-1'><b>5.24.</b> Outline</a></li>
+</ul>
+<li><a href='04-abstracting.html'><b>6.</b>Invariants In Constructors</a></li>
+<ul class='section'>
+<li><a href='04-abstracting.html#invariants-in-constructors-1'><b>6.1.</b> Invariants In Constructors</a></li>
+<li><a href='04-abstracting.html#invariants-in-constructors-2'><b>6.2.</b> Invariants In Constructors</a></li>
+<li><a href='04-abstracting.html#invariants-in-constructors-3'><b>6.3.</b> Invariants In Constructors</a></li>
+<li><a href='04-abstracting.html#abstracting-refinements'><b>6.4.</b> Abstracting Refinements</a></li>
+<li><a href='04-abstracting.html#abstracting-refinements-1'><b>6.5.</b> Abstracting Refinements</a></li>
+<li><a href='04-abstracting.html#abstracting-refinements-2'><b>6.6.</b> Abstracting Refinements</a></li>
+<li><a href='04-abstracting.html#using-abstract-refinements'><b>6.7.</b> Using Abstract Refinements</a></li>
+<li><a href='04-abstracting.html#recap'><b>6.8.</b> Recap</a></li>
+<li><a href='04-abstracting.html#recap-1'><b>6.9.</b> Recap</a></li>
+<li><a href='04-abstracting.html#bounded-refinements-induction-as-a-type'><b>6.10.</b> Bounded Refinements: Induction as a Type</a></li>
+<li><a href='04-abstracting.html#bounded-refinements-induction-as-a-type-1'><b>6.11.</b> Bounded Refinements: Induction as a Type</a></li>
+<li><a href='04-abstracting.html#bounded-refinements-induction-as-a-type-2'><b>6.12.</b> Bounded Refinements: Induction as a Type</a></li>
+<li><a href='04-abstracting.html#bounded-refinements-induction-as-a-type-3'><b>6.13.</b> Bounded Refinements: Induction as a Type</a></li>
+</ul>
+<li><a href='06-concl.html'><b>7.</b>LiquidHaskell</a></li>
+<ul class='section'>
+<li><a href='06-concl.html#liquidhaskell-1'><b>7.1.</b> LiquidHaskell</a></li>
+<li><a href='06-concl.html#liquidhaskell-2'><b>7.2.</b> LiquidHaskell</a></li>
+<li><a href='06-concl.html#evaluation'><b>7.3.</b> Evaluation</a></li>
+<li><a href='06-concl.html#recap-refinement-types'><b>7.4.</b> Recap: Refinement Types</a></li>
+<li><a href='06-concl.html#recap-refinement-types-1'><b>7.5.</b> Recap: Refinement Types</a></li>
+<li><a href='06-concl.html#recap-refinement-types-2'><b>7.6.</b> Recap: Refinement Types</a></li>
+<li><a href='06-concl.html#recap-refinement-types-3'><b>7.7.</b> Recap: Refinement Types</a></li>
+<li><a href='06-concl.html#many-friends-many-directions'><b>7.8.</b> Many Friends, Many Directions</a></li>
+<li><a href='06-concl.html#thank-you'><b>7.9.</b> Thank You!</a></li>
+</ul>
+</ul>
+
+</div>
+
+       <div id="checker-status">
+
+         <!-- Verifying ... -->
+         <button class="btn btn-xs btn-link actbutton" type="button" style="font-size:30px; z-index:1"
+                ng-show="isChecking" ng-click="verifySource()">
+          <span class="glyphicon glyphicon-hourglass"></span>
+         </button>
+
+
+         <!-- Safe -->
+         <button class="btn btn-xs btn-link actbutton" type="button" style="font-size:30px; color:green; z-index:1"
+                 ng-show="isSafe">
+           <span class="glyphicon glyphicon-ok"></span>
+         </button>
+
+         <div class="dropdown" ng-show="isBad">
+             <button class="btn btn-xs btn-link dropdown-toggle"
+                     type="button"
+                     id="errorblockdropdown"
+                     data-toggle="dropdown"
+                     style="font-size:30px; color:red; z-index:1">
+               <span class="glyphicon glyphicon-remove" style="vertical-align:middle"></span><font size="4">{{errorBlocks.length}}</font>
+               </span>
+             </button>
+             <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+               <li ng-repeat="err in errorBlocks">
+                 <a tabindex="-1" ng-click="jumpToProgPane(err)">{{err.index}}</a>
+               </li>
+             </ul>
+         </div>
+       </div>
+
+
+<div id='page-wrapper'>
+<div id='page'>
+
+<div class="hidden">
+<div id="program-pane-0" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-0" class="programbox">{-# LANGUAGE TupleSections    #-}
+{-@ LIQUID "--no-warnings"      @-}
+{-@ LIQUID "--short-names"      @-}
+{-@ LIQUID "--diff"             @-}
+{-@ LIQUID "--exact-data-cons"  @-}
+{-@ LIQUID "--higherorder"      @-}
+{-@ LIQUID "--automatic-instances=liquidinstances" @-}
+
+-- Hidden code
+
+module Reflection where
+import Language.Haskell.Liquid.ProofCombinators
+import Prelude hiding (sum, (++))
+
+sillyProof :: Int -> Int -> Proof
+appendPf :: [a] -> [a] -> [a] -> ()
+
+{-@ infix   ++ @-}
+{-@ reflect ++ @-}
+
+by = (?)
+
+{-
+thm :: [a] -> [a] -> [a] -> ()
+
+thm [] ys zs     = ([] ++ ys) ++ zs
+                ==. ys ++ zs
+                ==. [] ++ (ys ++ zs)
+                *** QED
+thm (x:xs) ys zs = ((x:xs) ++ ys) ++ zs
+                ==. (x : (xs ++ ys)) ++ zs
+                ==.  x : ((xs ++ ys) ++ zs)
+                ==.  x : (xs ++ (ys ++ zs)) ? thm xs ys zs
+                ==.  (x : xs) ++ (ys ++ zs)
+                *** QED
+
+ -}</div>
+</div>
+
+</div>
+<div id="slide-0" class="slide">
+<h2 id="types-as-theorems-programs-as-proofs">Types as Theorems, Programs as Proofs</h2>
+<p align="center">
+<img src="img/escher-drawing-hands.jpg" height=300px/>
+</p>
+<p><strong>Classic Idea</strong> <a href="https://en.wikipedia.org/wiki/Curry–Howard_correspondence">Curry-Howard</a>, <a href="http://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/propositions-as-types.pdf">Propositions As Types</a></p>
+</div>
+<div id="slide-1" class="slide">
+<h2 id="types-as-theorems">Types As Theorems</h2>
+<p><br></p>
+<p>The Refined <em>Type</em> ...</p>
+<p><span class="math display">\[\reft{v}{b}{P}\]</span></p>
+<p>... corresponds to the <em>Theorem</em></p>
+<p><span class="math display">\[\mathit{P}\]</span></p>
+</div>
+<div id="slide-2" class="slide">
+<h2 id="types-as-theorems-example">Types as Theorems: Example</h2>
+<p><br></p>
+<p>The Refined <em>Type</em> ...</p>
+<div id="program-pane-1" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-1" class="programbox">{-@ type OnePlusOneEqualsTwo = {v:() | 1 + 1 = 2} @-}</div>
+</div>
+
+<p>... corresponds to the <em>Theorem</em></p>
+<p><span class="math display">\[1 + 1 = 2\]</span></p>
+</div>
+<div id="slide-3" class="slide">
+<h2 id="programs-as-proofs-example">Programs As Proofs: Example</h2>
+<p><br></p>
+<p>The <em>Program</em> ...</p>
+<div id="program-pane-2" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-2" class="programbox">{-@ easyProof :: OnePlusOneEqualsTwo @-}
+easyProof = ()</div>
+</div>
+
+<p>... corresponds to a <em>Proof</em> that</p>
+<p><span class="math display">\[1 + 1 = 2\]</span></p>
+</div>
+<div id="slide-4" class="slide">
+<h2 id="types-as-theorems-1">Types As Theorems</h2>
+<p><br></p>
+<p>The Refined <em>Type</em> ...</p>
+<p><span class="math display">\[\bindx{n}{\Nat} \rightarrow \reft{v}{b}{P(n)}\]</span></p>
+<p>... corresponds to the <em>Theorem</em></p>
+<p><span class="math display">\[\forall n \in \Nat.\ P(n)\]</span></p>
+</div>
+<div id="slide-5" class="slide">
+<h2 id="types-as-theorems-example-1">Types as Theorems: Example</h2>
+<p><br></p>
+<p>The Refined <em>Type</em> ...</p>
+<div id="program-pane-3" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-3" class="programbox">{-@ type PlusCommutes = n:Int -> m:Int -> { n + m = m + n } @-}</div>
+</div>
+
+<p>... corresponds to the <em>Theorem</em></p>
+<p><span class="math display">\[\forall n, m.\ n + m = m + n\]</span></p>
+</div>
+<div id="slide-6" class="slide">
+<h2 id="programs-as-proofs-example-1">Programs As Proofs: Example</h2>
+<p><br></p>
+<p>The <em>Program</em> ...</p>
+<div id="program-pane-4" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-4" class="programbox">{-@ sillyProof :: PlusCommutes @-}
+sillyProof n m = ()</div>
+</div>
+
+<p>... corresponds to a <em>Proof</em> that</p>
+<p><span class="math display">\[\forall n, m.\ n + m = m + n\]</span></p>
+</div>
+<div id="slide-7" class="slide">
+<h2 id="types-as-theorems-programs-as-proofs-1">Types as Theorems, Programs as Proofs</h2>
+<p><br></p>
+<p align="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;"><strong>Code</strong></th>
+<th style="text-align: center;"></th>
+<th style="text-align: left;"><strong>Math</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">Types</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Theorems</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Programs</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Proofs</td>
+</tr>
+</tbody>
+</table>
+</p>
+</div>
+<div id="slide-8" class="slide">
+<h2 id="those-proofs-were-boring">Those Proofs were Boring</h2>
+<p><br></p>
+<p><strong>Simple Arithmetic</strong></p>
+<p>Automatically proved by SMT Solver</p>
+</div>
+<div id="slide-9" class="slide">
+<h2 id="those-proofs-were-boring-1">Those Proofs were Boring</h2>
+<p><br></p>
+<p><strong>Simple Arithmetic</strong></p>
+<p>Automatically proved by SMT Solver</p>
+<p><br></p>
+<p><strong>How about proofs about user-defined functions?</strong></p>
+<p>Beyond automatic SMT, but the user can <em>write proofs</em></p>
+</div>
+<div id="slide-10" class="slide">
+<h2 id="theorems-about-functions">Theorems about Functions</h2>
+<div id="program-pane-5" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-5" class="programbox">{-@ reflect sum @-}
+sum :: Int -> Int
+sum n
+  | n <= 0    = 0
+  | otherwise = n + sum (n - 1)</div>
+</div>
+
+<p><strong>How can we prove the the theorems</strong></p>
+<p><span class="math inline">\(\mathit{sum}(1) = 1\)</span>,</p>
+<p><span class="math inline">\(\mathit{sum}(2) = 3\)</span>,</p>
+<p><span class="math inline">\(\mathit{sum}(3) = 6\)</span>.</p>
+</div>
+<div id="slide-11" class="slide">
+<h2 id="refinement-reflection">Refinement Reflection</h2>
+<p><br></p>
+<p>The <em>annotation</em></p>
+<div id="program-pane-6" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-6" class="programbox">{-@ reflect sum @-}</div>
+</div>
+
+<p>Automatically gives <code>sum</code> the <em>type</em></p>
+<pre class="spec"><code>sum :: n:Int -&gt; {v:Int | v = if n == 0 then 0 else n + sum (n-1)}
+</code></pre>
+</div>
+<div id="slide-12" class="slide">
+<h2 id="reflect-function-into-output-type">Reflect Function into Output Type</h2>
+<p><br></p>
+<p>The type of <code>sum</code> connects <em>implementation</em> and <em>specification</em></p>
+<pre class="spec"><code>sum :: n:Int -&gt; {v:Int | v = if n == 0 then 0 else n + sum (n-1)}
+</code></pre>
+</div>
+<div id="slide-13" class="slide">
+<h2 id="reflect-function-into-output-type-1">Reflect Function into Output Type</h2>
+<p><br></p>
+<p>The type of <code>sum</code> connects <em>implementation</em> and <em>specification</em></p>
+<pre class="spec"><code>sum :: n:Int -&gt; {v:Int | v = if n == 0 then 0 else n + sum (n-1)}
+</code></pre>
+<p><br></p>
+<p><strong>Key Idea</strong></p>
+<p>Calling <code>sum n</code> <em>reveals</em> definition at <code>n</code> to refinement logic!</p>
+</div>
+<div id="slide-14" class="slide">
+<h2 id="reflection-at-result-type">Reflection at Result Type</h2>
+<br>
+<div id="program-pane-7" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-7" class="programbox">{-@ sum3 :: _ -> { sum 3 == 6 } @-}
+
+sum3 _ = let s0 = sum 0   -- s0 :: {sum 0 = 0        }
+             s1 = sum 1   -- s1 :: {sum 1 = 1 + sum 0}
+             s2 = sum 2   -- s2 :: {sum 2 = 2 + sum 1}
+             s3 = sum 3   -- s3 :: {sum 3 = 3 + sum 2}
+         in  ()           -- SMT connects the dots.</div>
+</div>
+
+<p><strong>Key Idea</strong></p>
+<p>Calling <code>sum n</code> <em>reveals</em> definition at <code>n</code> to refinement logic!</p>
+</div>
+<div id="slide-15" class="slide">
+<h2 id="structuring-proofs-as-calculations">Structuring Proofs as Calculations</h2>
+<p><br></p>
+<p>Using combinators from <a href="https://github.com/ucsd-progsys/liquidhaskell/blob/develop/include/Language/Haskell/Liquid/ProofCombinators.hs"><code>ProofCombinators</code></a>!</p>
+<br>
+<div id="program-pane-8" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-8" class="programbox">{-@ sum3' :: _ -> { sum 3 = 6 } @-}
+sum3' _ =   sum 3
+        ==. 3 + sum 2
+        ==. 3 + 2 + sum 1
+        ==. 3 + 2 + 1 + sum 0
+        ==. 6
+        *** QED</div>
+</div>
+
+</div>
+<div id="slide-16" class="slide">
+<h2 id="types-as-theorems-programs-as-proofs-2">Types as Theorems, Programs as Proofs</h2>
+<p><br></p>
+<p align="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;"><strong>Code</strong></th>
+<th style="text-align: center;"></th>
+<th style="text-align: left;"><strong>Math</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">Types</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Theorems</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Programs</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Proofs</td>
+</tr>
+</tbody>
+</table>
+</p>
+</div>
+<div id="slide-17" class="slide">
+<h2 id="reusing-proofs-functions-as-lemmas">Reusing Proofs: Functions as Lemmas</h2>
+<p><br></p>
+<p><strong>Proofs are functions</strong></p>
+</div>
+<div id="slide-18" class="slide">
+<h2 id="reusing-proofs-functions-as-lemmas-1">Reusing Proofs: Functions as Lemmas</h2>
+<p><br></p>
+<p><strong>Proofs are functions</strong></p>
+<p>Reuse by <em>calling</em> the function</p>
+</div>
+<div id="slide-19" class="slide">
+<h2 id="reusing-proofs-functions-as-lemmas-2">Reusing Proofs: Functions as Lemmas</h2>
+<p><br></p>
+<p><strong>Proofs are functions</strong></p>
+<p>Reuse by <em>calling</em> the function</p>
+<div id="program-pane-9" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-9" class="programbox">{-@ sum4 :: _ -> { sum 4 = 10 } @-}
+sum4 _ =  sum 4
+      ==. 4 + sum 3
+      ==. 4 + 6     ?   sum3 ()   -- lemma { sum 3 == 6 }
+      ==. 10
+      *** QED</div>
+</div>
+
+<p><code>?</code> is a library operator (read ``because'')</p>
+</div>
+<div id="slide-20" class="slide">
+<h2 id="types-as-theorems-programs-as-proofs-3">Types as Theorems, Programs as Proofs</h2>
+<p><br></p>
+<p align="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;"><strong>Code</strong></th>
+<th style="text-align: center;"></th>
+<th style="text-align: left;"><strong>Math</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">Types</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Theorems</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Programs</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Proofs</td>
+</tr>
+</tbody>
+</table>
+</p>
+</div>
+<div id="slide-21" class="slide">
+<h2 id="types-as-theorems-programs-as-proofs-4">Types as Theorems, Programs as Proofs</h2>
+<p><br></p>
+<p align="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;"><strong>Code</strong></th>
+<th style="text-align: center;"></th>
+<th style="text-align: left;"><strong>Math</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">Types</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Theorems</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Programs</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Proofs</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">Functions</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Lemmas</td>
+</tr>
+</tbody>
+</table>
+</p>
+</div>
+<div id="slide-22" class="slide">
+<h2 id="proof-by-logical-evaluation">Proof by Logical Evaluation</h2>
+<p><br></p>
+<p><strong>Long chains of calculations are tedious</strong></p>
+</div>
+<div id="slide-23" class="slide">
+<h2 id="proof-by-logical-evaluation-1">Proof by Logical Evaluation</h2>
+<p><br></p>
+<p><strong>Long chains of calculations are tedious</strong></p>
+<p>Make the machine do the hard work!</p>
+<p>A new algorithm to <a href="https://arxiv.org/abs/1711.03842">emulate computation in SMT logic</a></p>
+</div>
+<div id="slide-24" class="slide">
+<h2 id="proof-by-logical-evaluation-2">Proof by Logical Evaluation</h2>
+<p><br></p>
+<p><strong>Long chains of calculations are tedious</strong></p>
+<p>Make the machine do the hard work!</p>
+<p>A new algorithm to <a href="https://arxiv.org/abs/1711.03842">emulate computation in SMT logic</a></p>
+<div id="program-pane-10" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-10" class="programbox">{-@ sum3auto :: _ -> { sum 3 = 6 }  @-}
+sum3auto _ = ()
+
+{-@ sum4auto :: _ -> { sum 4 = 10 } @-}
+sum4auto _ = ()</div>
+</div>
+
+</div>
+<div id="slide-25" class="slide">
+<h2 id="proof-by-induction">Proof by Induction</h2>
+<p><br></p>
+<p>Lets prove the theorem</p>
+<p><span class="math display">\[\forall n.\ \sum_{i = 0}^n i = \frac{n \times (n + 1)}{2}\]</span></p>
+</div>
+<div id="slide-26" class="slide">
+<h2 id="proof-by-induction-1">Proof by Induction</h2>
+<p><br></p>
+<p>Lets prove the theorem</p>
+<p><span class="math display">\[\forall n.\ \sum_{i = 0}^n i = \frac{n \times (n + 1)}{2}\]</span></p>
+<p>that is</p>
+<p><span class="math display">\[\forall n \in \Nat.\ 2 \times \mathit{sum}(n) = n \times (n + 1)\]</span></p>
+</div>
+<div id="slide-27" class="slide">
+<h2 id="proof-by-induction-2">Proof by Induction</h2>
+<p><span class="math display">\[\forall n \in \Nat.\ 2 \times \mathit{sum}(n) = n \times (n + 1)\]</span></p>
+<div id="program-pane-11" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-11" class="programbox">{-@ sumPf :: n:Nat -> { 2 * sum n == n * (n + 1) } @-}
+sumPf  :: Int -> ()
+sumPf 0 =   2 * sum 0
+        ==. 0
+        *** QED
+sumPf n =   2 * sum n
+        ==. 2 * (n + sum (n-1))
+        ==. 2 * (n + ((n - 1) * n))   ?  sumPf (n - 1)
+        ==. n * (n + 1)
+        *** QED</div>
+</div>
+
+<p><strong>Q:</strong> What happens if we use the wrong induction?</p>
+</div>
+<div id="slide-28" class="slide">
+<h2 id="types-as-theorems-programs-as-proofs-5">Types as Theorems, Programs as Proofs</h2>
+<p><br></p>
+<p align="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;"><strong>Code</strong></th>
+<th style="text-align: center;"></th>
+<th style="text-align: left;"><strong>Math</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">Types</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Theorems</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Programs</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Proofs</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">Functions</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Lemmas</td>
+</tr>
+</tbody>
+</table>
+</p>
+</div>
+<div id="slide-29" class="slide">
+<h2 id="types-as-theorems-programs-as-proofs-6">Types as Theorems, Programs as Proofs</h2>
+<p><br></p>
+<p align="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;"><strong>Code</strong></th>
+<th style="text-align: center;"></th>
+<th style="text-align: left;"><strong>Math</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">Types</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Theorems</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Programs</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Proofs</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">Functions</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Lemmas</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Branches</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Case-Splits</td>
+</tr>
+</tbody>
+</table>
+</p>
+</div>
+<div id="slide-30" class="slide">
+<h2 id="types-as-theorems-programs-as-proofs-7">Types as Theorems, Programs as Proofs</h2>
+<p><br></p>
+<p align="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;"><strong>Code</strong></th>
+<th style="text-align: center;"></th>
+<th style="text-align: left;"><strong>Math</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">Types</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Theorems</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Programs</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Proofs</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">Functions</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Lemmas</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Branches</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Case-Splits</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">Recursion</td>
+<td style="text-align: center;">is</td>
+<td style="text-align: left;">Induction</td>
+</tr>
+</tbody>
+</table>
+</p>
+</div>
+<div id="slide-31" class="slide">
+<h2 id="theorems-about-data">Theorems about Data</h2>
+<p>Recall the list append function:</p>
+<div id="program-pane-12" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-12" class="programbox">(++)        :: [a] -> [a] -> [a]
+[]     ++ ys = ys
+(x:xs) ++ ys = x : (xs ++ ys)</div>
+</div>
+
+<p>Lets prove that the operator is <em>associative</em></p>
+<div id="program-pane-13" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-13" class="programbox">{-@ type AppendAssoc a = xs:[a] -> ys:[a] -> zs:[a]
+                   -> { (xs ++ ys) ++ zs = xs ++ (ys ++ zs) }
+  @-}</div>
+</div>
+
+</div>
+<div id="slide-32" class="slide">
+<h2 id="theorems-about-data-associativity-of-append">Theorems about Data: Associativity of <code>append</code></h2>
+<p><br></p>
+<p>Lets write fill in a <em>calculational</em> proof:</p>
+<div id="program-pane-14" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-14" class="programbox">{-@ appendPf :: AppendAssoc a @-}
+appendPf xs ys zs = () -- Q: Can you help me fill this in?</div>
+</div>
+
+</div>
+<div id="slide-33" class="slide">
+<h2 id="case-study-mapreduce">Case Study: MapReduce</h2>
+<p><br> <em>Chunk</em> inputs, <em>Map</em> operation in parallel, and <em>Reduce</em> the results. <br></p>
+</div>
+<div id="slide-34" class="slide">
+<h2 id="case-study-mapreduce-1">Case Study: MapReduce</h2>
+<p><br> <em>Chunk</em> inputs, <em>Map</em> operation in parallel, and <em>Reduce</em> the results. <br></p>
+<p align="center">
+<img src="img/map-reduce.jpg" height=250px/>
+</p>
+</div>
+<div id="slide-35" class="slide">
+<h2 id="reduce-theorem">Reduce Theorem</h2>
+<p><strong>Description</strong></p>
+<p>If <code>op</code> is associative then <code>reduce op xs == parallelReduce op xs</code></p>
+<p><strong>Theorem</strong></p>
+<pre class="spec"><code>reduceTheorem
+ :: op:(a -&gt; a -&gt; a)                  -- for any op-erator
+ -&gt; xs:[a]                            -- for any collection xs
+ -&gt; Assoc op                          -- if op is associative
+ -&gt; {reduce op xs = parReduce op xs}  -- then parReduce is ok!
+</code></pre>
+</div>
+<div id="slide-36" class="slide">
+<h2 id="types-as-theorems-programs-as-proofs-8">Types as Theorems, Programs as Proofs</h2>
+<p><br></p>
+<p align="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;"><strong>Code</strong></th>
+<th style="text-align: center;"></th>
+<th style="text-align: left;"><strong>Math</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">Types</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Theorems</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Programs</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Proofs</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">Functions</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Lemmas</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Branches</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Case-Splits</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">Recursion</td>
+<td style="text-align: center;">is</td>
+<td style="text-align: left;">Induction</td>
+</tr>
+</tbody>
+</table>
+</p>
+</div>
+<div id="slide-37" class="slide">
+<h2 id="outline">Outline</h2>
+<p><br></p>
+<p><a href="01-intro.html">Motivation</a></p>
+<p><a href="02-refinements.html">Refinements 101</a></p>
+<p><a href="03-examples.html">Refinements by Example</a></p>
+<p><a href="04-termination.html">How to Avoid Infinite Loops</a></p>
+<p><a href="05-reflection.html">Types as Theorems, Programs as Proofs</a></p>
+</div>
+<div id="slide-38" class="slide">
+<h2 id="outline-1">Outline</h2>
+<p><br></p>
+<p><a href="01-intro.html">Motivation</a></p>
+<p><a href="02-refinements.html">Refinements 101</a></p>
+<p><a href="03-examples.html">Refinements by Example</a></p>
+<p><a href="04-termination.html">How to Avoid Infinite Loops</a></p>
+<p><a href="05-reflection.html">Types as Theorems, Programs as Proofs</a></p>
+<p><a href="06-concl.html">Current Status &amp; Future Directions</a></p>
+</div>
+
+</div>
+</div>
+
+<!--Site Meter
+<div class="hidden">
+  <script type="text/javascript" src="http://s23.sitemeter.com/js/counter.js?site=s23liquidtypes"></script>
+  <noscript>
+    <a href="http://s23.sitemeter.com/stats.asp?site=s23liquidtypes"
+      target="_top">
+      <img src="http://s23.sitemeter.com/meter.asp?site=s23liquidtypes"
+      alt="Site Meter" border="0"/></a>
+  </noscript>
+</div>
+-->
+
+
+
+
+<!-- JavaScript below! ============================================== -->
+
+  <script src="./js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+  <script src="./js/ace/theme-monokai.js" type="text/javascript" charset="utf-8"></script>
+  <script src="./js/ace/mode-haskell.js"  type="text/javascript" charset="utf-8"></script>
+  <script src="./js/liquid/tooltip.js"></script>
+  <script src="./js/liquid/annot.js"></script>
+  <script src="./js/liquid/config.js"></script>
+  <script src="./js/liquid/slideshow.js"></script>
+  <script src="./js/liquid/liquid.js"></script>
+
+  <script type="text/javascript">
+    var queryServerURL = "http://goto.ucsd.edu:8090/" ;
+  </script>
+
+  <!-- rust nav JS -->
+  <script type="text/javascript">
+    window.playgroundUrl = "";
+  </script>
+
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function(event) {
+
+ document.getElementById("toggle-nav").onclick = toggleNav;
+
+  function toggleNav() {
+    var toc         = document.getElementById("toc");
+    var pagewrapper = document.getElementById("page-wrapper");
+    var status      = document.getElementById("checker-status");
+
+    toggleClass(toc,         "mobile-hidden");
+    // toggleClass(status,      "mobile-hidden");
+    toggleClass(pagewrapper, "mobile-hidden");
+  };
+
+  function toggleClass(el, className) {
+     // from http://youmightnotneedjquery.com/
+     if (el.classList) {
+       el.classList.toggle(className);
+     } else {
+       var classes = el.className.split(' ');
+       var existingIndex = classes.indexOf(className);
+
+       if (existingIndex >= 0) {
+         classes.splice(existingIndex, 1);
+       } else {
+         classes.push(className);
+       }
+       el.className = classes.join(' ');
+     }
+  }
+});
+</script>
+
+
+
+
+</body>
+</html>
