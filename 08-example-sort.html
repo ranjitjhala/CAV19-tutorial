@@ -524,10 +524,9 @@ insert x []    = [x]
     <span class="glyphicon glyphicon-play"></span>
   </button>
  
-  <div id="program-3" class="programbox">{- 
-msort :: (Ord a) => [a] -> OList a
-msort []   = []
-msort [x]  = [x]
+  <div id="program-3" class="programbox">msort :: (Ord a) => [a] -> OList a
+msort []   = Emp 
+msort [x]  = x :< Emp
 msort xs   = let (xs1, xs2) = split xs in
                merge (msort xs1) (msort xs2)
 
@@ -536,13 +535,12 @@ split (x:y:zs) = let (xs, ys) = split zs in
                    (x:xs, y:ys) 
 split xs       = (xs, [])
 
-merge :: [a] -> [a] -> [a]  
-merge xs []         = xs
-merge [] ys         = ys
-merge (x:xs) (y:ys)
-  | x <= y          = x : merge xs (y:ys)
-  | otherwise       = y : merge (x:xs) y
--}</div>
+merge :: (Ord a) => OList a -> OList a -> OList a  
+merge xs Emp        = xs
+merge Emp ys       = ys
+merge (x :< xs) (y :< ys)
+  | x <= y          = x :< merge xs (y :< ys)
+  | otherwise       = y :< merge (x :< xs) ys</div>
 </div>
 
 </div>
@@ -567,9 +565,6 @@ merge (x:xs) (y:ys)
 <br>
 </div>
 <p><strong>Parameterize refinements over types</strong></p>
-<div class="mybreak">
-<br>
-</div>
 <pre class="spec"><code>                   data [a]&lt;rel :: a -&gt; a -&gt; Bool&gt; where
                      = []
                      | (:) { hd :: a

@@ -686,8 +686,8 @@ zero''    =  0    -- as |-  Zero <: Nat</div>
 <br>
 </div>
 <p><strong>Built-in Functions</strong></p>
-<pre class="spec"><code>         plus  :: x:Int -&gt; y:Int -&gt; {v:Int|v = x + y} 
-         minus :: x:Int -&gt; y:Int -&gt; {v:Int|v = x - y} 
+<pre class="spec"><code>                  plus  :: x:Int -&gt; y:Int -&gt; {v:Int|v = x + y} 
+                  minus :: x:Int -&gt; y:Int -&gt; {v:Int|v = x - y} 
 </code></pre>
 <div class="mybreak">
 <br>
@@ -759,7 +759,7 @@ four  = plus x 1
                 &amp; \Gamma \vdash x                 :: \Int \\
                 &amp; \Gamma \vdash 1                 :: \Int \\
                 &amp;                                         \\
-{\mathbf{Then}} &amp; \Gamma \vdash \mathit{plus} x 1 :: \reft{v}{\Int}{v = x + 1}
+{\mathbf{Then}} &amp; \Gamma \vdash \mathit{plus}\ x\ 1 :: \reft{v}{\Int}{v = x + 1}
 \end{array}
 \]</span></p>
 </div>

@@ -685,7 +685,7 @@ append (x:xs) ys = x : append xs ys</div>
     <span class="glyphicon glyphicon-play"></span>
   </button>
  
-  <div id="program-7" class="programbox">{-@ merge :: xs:[a] -> ys:[a] -> [a] / [len xs + len ys] @-}
+  <div id="program-7" class="programbox">{-@ merge :: xs:[a] -> ys:[a] -> [a] @-}
 merge (x:xs) (y:ys)
   | x < y           = x : merge xs (y : ys)
   | otherwise       = y : merge ys (x : xs)

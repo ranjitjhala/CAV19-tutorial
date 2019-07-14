@@ -585,7 +585,7 @@ insert x (y:ys)
 <p><br></p>
 <p>Using the standard library <code>Data.Set</code> API for convenience</p>
 <p><br></p>
-<pre class="spec"><code>import qualified Data.Set as S
+<pre class="spec"><code>                    import qualified Data.Set as S
 </code></pre>
 </div>
 <div id="slide-10" class="slide">
@@ -658,7 +658,7 @@ insertE x (y:ys)
 </div>
 <div id="slide-14" class="slide">
 <h2 id="mergesort-size">MergeSort: Size</h2>
-<p>**Exercise: Fix specifications for <code>split</code> and <code>merge</code> to verify <code>msort</code></p>
+<p><strong>Exercise:</strong> Fix specifications for <code>split</code> and <code>merge</code> to verify <code>msort</code></p>
 <div id="program-pane-5" class="welleditor" style="background:#fff; position:relative">
 
   <!-- Verify Source -->
@@ -670,9 +670,8 @@ insertE x (y:ys)
   <div id="program-5" class="programbox">{-@ msort :: xs:[a] -> ListN a (length xs) @-}
 msort []   = []
 msort [x]  = [x]
-msort xs   = let (xs1, xs2) = split xs
-             in 
-                 merge (msort xs1) (msort xs2)
+msort xs   = let (ys, zs) = split xs in
+               merge (msort ys) (msort zs)
 
 {-@ split :: xs:[a] -> ([a], [a]) @-}
 split (x:y:zs) = let (xs, ys) = split zs 

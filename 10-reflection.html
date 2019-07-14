@@ -647,6 +647,7 @@ sillyProof n m = ()</div>
 </div>
 <div id="slide-10" class="slide">
 <h2 id="theorems-about-functions">Theorems about Functions</h2>
+<p><br></p>
 <div id="program-pane-5" class="welleditor" style="background:#fff; position:relative">
 
   <!-- Verify Source -->
@@ -670,10 +671,10 @@ sum n = n + sum (n-1)</div>
 <h2 id="refinement-reflection">Refinement Reflection</h2>
 <p><br></p>
 <p>The <em>annotation</em></p>
-<pre class="spec"><code>{-@ reflect sum @-}
+<pre class="spec"><code>                          {-@ reflect sum @-}
 </code></pre>
 <p>Automatically gives <code>sum</code> the <em>type</em></p>
-<pre class="spec"><code>sum :: n:Int -&gt; {v:Int | v = if n == 0 then 0 else n + sum (n-1)}
+<pre class="spec"><code>      sum :: n:Int -&gt; {v:Int | v = if n == 0 then 0 else n + sum (n-1)}
 </code></pre>
 <p>... but <code>sum</code> is <strong>uninterpreted</strong> in the refinement logic.</p>
 </div>
@@ -687,17 +688,17 @@ sum n = n + sum (n-1)</div>
 </div>
 <div id="slide-13" class="slide">
 <h2 id="reflect-function-into-output-type-1">Reflect Function into Output Type</h2>
-<p><br></p>
+<p><br> <br></p>
 <p>The type of <code>sum</code> connects <em>implementation</em> and <em>specification</em></p>
 <pre class="spec"><code>sum :: n:Int -&gt; {v:Int | v = if n == 0 then 0 else n + sum (n-1)}
 </code></pre>
 <p><br></p>
 <p><strong>Key Idea</strong></p>
-<p>Calling <code>sum n</code> <em>reveals definition</em> at <code>n</code> to the type checker.</p>
+<p>&quot;Calling&quot; <code>sum n</code> <em>reveals definition</em> of <code>sum n</code> to the type checker.</p>
 </div>
 <div id="slide-14" class="slide">
 <h2 id="reflection-at-result-type">Reflection at Result Type</h2>
-<br>
+<p><br> <br></p>
 <div id="program-pane-6" class="welleditor" style="background:#fff; position:relative">
 
   <!-- Verify Source -->
@@ -715,16 +716,16 @@ sum3 _ = let s0 = sum 0   -- s0 :: {sum 0 = 0        }
 </div>
 
 <p><strong>Key Idea</strong></p>
-<p>Calling <code>sum n</code> <em>reveals definition</em> at <code>n</code> to the type checker.</p>
+<p>&quot;Calling&quot; <code>sum n</code> <em>reveals definition</em> of <code>sum n</code> to the type checker.</p>
 </div>
 <div id="slide-15" class="slide">
 <h2 id="structuring-proofs-as-calculations">Structuring Proofs as Calculations</h2>
-<p><br></p>
+<p><br> <br></p>
 <p>Using combinators from <a href="https://github.com/ucsd-progsys/liquidhaskell/blob/develop/include/Language/Haskell/Liquid/ProofCombinators.hs#L97-L100"><code>ProofCombinators</code></a></p>
-<p><br></p>
-<pre class="spec"><code>(===) :: x:a -&gt; y:{a | y == x} -&gt; {v:a|v == x &amp;&amp; v == y}
+<pre class="spec"><code>            (===) :: x:a -&gt; y:{a | y == x} -&gt; {v:a|v == x &amp;&amp; v == y}
 </code></pre>
-<p><em>Require</em> both sides are equal, <em>Ensure</em> result is equal to both</p>
+<p><strong>Require</strong> both sides are equal</p>
+<p><strong>Ensure</strong> result is equal to both</p>
 </div>
 <div id="slide-16" class="slide">
 <h2 id="structuring-proofs-as-calculations-1">Structuring Proofs as Calculations</h2>
@@ -878,7 +879,7 @@ sum4 _ =  sum 4
 <p><br></p>
 <p><strong>Long chains of calculations are tedious</strong></p>
 <p>Make the machine do the hard work!</p>
-<p>An algorithm to <a href="https://arxiv.org/abs/1711.03842">emulate computation inside SMT logic</a></p>
+<p>An algorithm to emulate computation inside SMT logic <a href="https://arxiv.org/abs/1711.03842">(POPL18)</a></p>
 </div>
 <div id="slide-25" class="slide">
 <h2 id="proof-by-logical-evaluation-2">Proof by Logical Evaluation</h2>

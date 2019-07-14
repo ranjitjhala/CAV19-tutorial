@@ -529,14 +529,14 @@ length (_:t) = 1 + length t </div>
 <div class="mybreak">
 <br>
 </div>
-<p><strong>Allow (some) Functions Inside Refinements</strong></p>
+<p><strong>Allow Uninterpreted Functions Inside Refinements</strong></p>
 </div>
 <div id="slide-6" class="slide">
 <h2 id="properties-of-structures-2">Properties of Structures</h2>
 <div class="mybreak">
 <br>
 </div>
-<p><strong>Allow (some) Functions Inside Refinements</strong></p>
+<p><strong>Allow Uninterpreted Functions Inside Refinements</strong></p>
 <div id="program-pane-2" class="welleditor" style="background:#fff; position:relative">
 
   <!-- Verify Source -->
@@ -569,16 +569,16 @@ length (_:t) = 1 + length t </div>
 <h2 id="properties-of-structures-3">Properties of Structures</h2>
 <p><br></p>
 <p><strong>Measures Yield Refined Constructors</strong></p>
-<pre class="spec"><code>   []  :: {v:[a] | length v = 0}
-   (:) :: a -&gt; t:[a] -&gt; {v:[a] | length v = 1 + length t}
+<pre class="spec"><code>            []  :: {v:[a] | length v = 0}
+            (:) :: a -&gt; t:[a] -&gt; {v:[a] | length v = 1 + length t}
 </code></pre>
 </div>
 <div id="slide-8" class="slide">
 <h2 id="properties-of-structures-4">Properties of Structures</h2>
 <p><br></p>
 <p><strong>Measures Yield Refined Constructors</strong></p>
-<pre class="spec"><code>   []  :: {v:[a] | length v = 0}
-   (:) :: a -&gt; t:[a] -&gt; {v:[a] | length v = 1 + length t}
+<pre class="spec"><code>            []  :: {v:[a] | length v = 0}
+            (:) :: a -&gt; t:[a] -&gt; {v:[a] | length v = 1 + length t}
 </code></pre>
 <div class="mybreak">
 <br>
@@ -589,8 +589,8 @@ length (_:t) = 1 + length t </div>
 <h2 id="properties-of-structures-5">Properties of Structures</h2>
 <p><br></p>
 <p><strong>Measures Yield Refined Constructors</strong></p>
-<pre class="spec"><code>   []  :: {v:[a] | length v = 0}
-   (:) :: a -&gt; t:[a] -&gt; {v:[a] | length v = 1 + length t}
+<pre class="spec"><code>            []  :: {v:[a] | length v = 0}
+            (:) :: a -&gt; t:[a] -&gt; {v:[a] | length v = 1 + length t}
 </code></pre>
 <div class="mybreak">
 <br>
@@ -653,8 +653,8 @@ map f (x:xs) = f x : map f xs</div>
 <br>
 </div>
 <p><strong>Refined Constructor Types</strong></p>
-<pre class="spec"><code>   []  :: {v:[a] | length v = 0}
-   (:) :: a -&gt; t:[a] -&gt; {v:[a] | length v = 1 + length t}
+<pre class="spec"><code>            []  :: {v:[a] | length v = 0}
+            (:) :: a -&gt; t:[a] -&gt; {v:[a] | length v = 1 + length t}
 </code></pre>
 </div>
 <div id="slide-13" class="slide">
@@ -663,8 +663,8 @@ map f (x:xs) = f x : map f xs</div>
 <br>
 </div>
 <p><strong>Refined Constructor Types</strong></p>
-<pre class="spec"><code>   []  :: {v:[a] | length v = 0}
-   (:) :: a -&gt; t:[a] -&gt; {v:[a] | length v = 1 + length t}
+<pre class="spec"><code>            []  :: {v:[a] | length v = 0}
+            (:) :: a -&gt; t:[a] -&gt; {v:[a] | length v = 1 + length t}
 </code></pre>
 <p><strong>Generalize Properties</strong></p>
 <p>During <em>construction</em> i.e. <em>applying</em> type of <code>[]</code> and <code>(:)</code></p>
@@ -678,8 +678,8 @@ map f (x:xs) = f x : map f xs</div>
 <br>
 </div>
 <p><strong>Refined Constructor Types</strong></p>
-<pre class="spec"><code>   []  :: {v:[a] | length v = 0}
-   (:) :: a -&gt; t:[a] -&gt; {v:[a] | length v = 1 + length t}
+<pre class="spec"><code>            []  :: {v:[a] | length v = 0}
+            (:) :: a -&gt; t:[a] -&gt; {v:[a] | length v = 1 + length t}
 </code></pre>
 <p><strong>Generalize Properties</strong></p>
 <p>During <em>construction</em> i.e. <em>applying</em> type of <code>[]</code> and <code>(:)</code></p>
@@ -704,9 +704,9 @@ map f (x:xs) = f x : map f xs</div>
                  elems  :: [a] -&gt; Set a
 </code></pre>
 <p>Their data constructor refinements are <strong>conjoined</strong></p>
-<pre class="spec"><code>  []  :: {v:[a] | length v = 0 &amp;&amp; elems v = empty}
-  (:) :: x:a -&gt; xs:[a] -&gt; {v:[a] |  length v = 1 + length xs
-                                 &amp;&amp; elems v  = addElem x  xs }
+<pre class="spec"><code>        []  :: {v:[a] | length v = 0 &amp;&amp; elems v = empty}
+        (:) :: x:a -&gt; xs:[a] -&gt; {v:[a] |  length v = 1 + length xs
+                                       &amp;&amp; elems v  = addElem x  xs }
 </code></pre>
 <p><strong>Allows programmer to easily <em>extend</em> properties</strong></p>
 </div>
