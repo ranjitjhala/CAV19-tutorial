@@ -453,7 +453,6 @@ ok, bad    :: () -> BST Int String
 lem_get_eq :: (Ord k) => BST k v -> k -> v -> Proof
 
 {- 
-
 {-@ lem_get_eq :: m: -> key:_ -> val:_ -> 
         { get (set m key val) key = Just val }
   @-}
@@ -518,12 +517,11 @@ ok _ = Node 6 "six"
     <span class="glyphicon glyphicon-play"></span>
   </button>
  
-  <div id="program-2" class="programbox">-- CUT
-{-@ data BST k v = Leaf
+  <div id="program-2" class="programbox">{-@ data BST k v = Leaf
                  | Node { mKey   :: k
                         , mVal   :: v 
-                        , mLeft  :: BST {k:_ | k < mKey} v
-                        , mRight :: BST {k:_ | mKey < k} v 
+                        , mLeft  :: BST k v
+                        , mRight :: BST k v 
                         }
                         @-} 
 
