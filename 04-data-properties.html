@@ -401,145 +401,281 @@ MathJax.Hub.Config({
     <span class="glyphicon glyphicon-play"></span>
   </button>
  
-  <div id="program-0" class="programbox">module Intro where
+  <div id="program-0" class="programbox">{-@ LIQUID "--no-termination" @-}
+{-@ LIQUID "--short-names"    @-}
 
-dummy :: Int
-dummy = 7</div>
+module Examples
+       ( average
+       , length
+       )
+       where
+
+import Prelude hiding (map, length)
+
+reduce :: (a -> b -> a) -> a -> [b] -> a
+reduce f acc []     = acc 
+reduce f acc (x:xs) = let acc' = f acc x 
+                      in
+                          reduce f acc' xs</div>
 </div>
 
-</div>
-<div class="slide">
-<p><br> <br> <br></p>
-<p align="center">
-<h1 style="border-bottom:none">
-Verification with Refinement Types
-</h1>
-<p><br></p>
-<h4 style="border-bottom:none">
-<font color="#1569C7">Ranjit Jhala</font>
-</h4>
-<p><br></p>
-<h4 style="border-bottom:none">
-<font color="green"> UC San Diego &amp; AWS/ARG </font>
-</h4>
-</p>
 </div>
 <div id="slide-0" class="slide">
-<h2 id="awsarg">AWS/ARG</h2>
-<p align="center">
-<img src="img/arg_intern_add.jpeg" height=280px/>
-</p>
+<h2 id="properties-of-data-structures">Properties of Data Structures</h2>
+<p><br> <br></p>
+<p><strong>So far: Refinements for properties of basic values like <code>Int</code></strong></p>
+<p>e.g. <code>{v:Int | lo &lt;= v &amp;&amp; v &lt; hi}</code></p>
 </div>
 <div id="slide-1" class="slide">
-<h2 id="follow-along-at-this-url">Follow Along at This URL</h2>
-<p><br> <br> <br></p>
-<p><a href="http://ranjitjhala.github.io/CAV2019-tutorial/" class="uri">http://ranjitjhala.github.io/CAV2019-tutorial/</a></p>
+<h2 id="properties-of-data-structures-1">Properties of Data Structures</h2>
+<p><br> <br></p>
+<p><strong>So far: Refinements for properties of basic values like <code>Int</code></strong></p>
+<p>e.g. <code>{v:Int | lo &lt;= v &amp;&amp; v &lt; hi}</code></p>
 <p><br></p>
-<p><strong>Zoom in</strong> to see nav arrows</p>
+<p><strong>Next: How to describe properties of data structures</strong></p>
 </div>
 <div id="slide-2" class="slide">
-<h2 id="program-analysis-verification">Program Analysis &amp; Verification</h2>
-<p><br> <br> <br> <br></p>
-<p>Why limited broader impact and adoption?</p>
+<h2 id="example-list-average">Example: List <code>average</code></h2>
+<p><br> <br></p>
+<p><strong>Suppose we have a built-in <code>div</code> operator:</strong></p>
+<p><code>div :: Int -&gt; {d:Int| d /= 0} -&gt; Int</code></p>
+<div class="mybreak">
+<br>
+</div>
+<p><strong>Input refinement specifies Pre-condition</strong></p>
+<p>Denominator <code>d</code> is non-zero</p>
 </div>
 <div id="slide-3" class="slide">
-<h2 id="program-analysis-verification-1">Program Analysis &amp; Verification</h2>
-<p>Why limited broader impact and adoption?</p>
-<p align="center">
-<img src="img/intro0.png" height=280px/>
-</p>
+<h2 id="example-list-average-1">Example: List <code>average</code></h2>
+<div class="mybreak">
+<br>
+</div>
+<p>Lets use <code>div</code> to write an <code>average</code> function</p>
+<div id="program-pane-1" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-1" class="programbox">{-@ average :: [Int] -> Int @-}
+average xs  = let total = reduce (+) 0 xs
+                  n     = length xs
+              in  
+                  div total n
+
+length       :: [a] -> Int
+length []    = 0
+length (_:t) = 1 + length t </div>
+</div>
+
+<p><strong>Exercise:</strong> Why is there an error?</p>
 </div>
 <div id="slide-4" class="slide">
-<h2 id="program-analysis-verification-2">Program Analysis &amp; Verification</h2>
-<p>Why limited broader impact and adoption?</p>
-<p align="center">
-<img src="img/intro1.png" height=280px/>
-</p>
+<h2 id="properties-of-structures">Properties of Structures</h2>
+<div class="mybreak">
+<br>
+</div>
+<p>How to describe the <em>size</em> of a list?</p>
 </div>
 <div id="slide-5" class="slide">
-<h2 id="programmers-analysis-verification">Program<em>mer's</em> Analysis &amp; Verification</h2>
-<p align="center">
-<img src="img/intro2.png" height=330px/>
-</p>
+<h2 id="properties-of-structures-1">Properties of Structures</h2>
+<div class="mybreak">
+<br>
+</div>
+<p>How to describe the <em>size</em> of a list?</p>
+<div class="mybreak">
+<br>
+</div>
+<p><strong>Allow (some) Functions Inside Refinements</strong></p>
 </div>
 <div id="slide-6" class="slide">
-<h2 id="analysis-influences-programs-design">Analysis Influences Program's Design</h2>
-<p align="center">
-<img src="img/intro-fp0.png" height=330px/>
-</p>
+<h2 id="properties-of-structures-2">Properties of Structures</h2>
+<div class="mybreak">
+<br>
+</div>
+<p><strong>Allow (some) Functions Inside Refinements</strong></p>
+<div id="program-pane-2" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-2" class="programbox">{-@ measure length @-}</div>
+</div>
+
+<p><strong>Which lets us define a type alias</strong></p>
+<div id="program-pane-3" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-3" class="programbox">{-@ type ListNE a = {v:[a] | 0 < length v} @-}</div>
+</div>
+
+<div class="mybreak">
+<br>
+</div>
+<p><strong>Exercise:</strong> Go back and <em>fix</em> <code>average</code> so it checks?</p>
 </div>
 <div id="slide-7" class="slide">
-<h2 id="analysis-influences-programs-design-1">Analysis Influences Program's Design</h2>
-<p align="center">
-<img src="img/intro-fp1.png" height=330px/>
-</p>
+<h2 id="properties-of-structures-3">Properties of Structures</h2>
+<p><br></p>
+<p><strong>Measures Yield Refined Constructors</strong></p>
+<pre class="spec"><code>   []  :: {v:[a] | length v = 0}
+   (:) :: a -&gt; t:[a] -&gt; {v:[a] | length v = 1 + length t}
+</code></pre>
 </div>
 <div id="slide-8" class="slide">
-<h2 id="analysis-influences-programs-design-2">Analysis Influences Program's Design</h2>
+<h2 id="properties-of-structures-4">Properties of Structures</h2>
 <p><br></p>
-<p>Uber NullAway <a href="https://eng.uber.com/nullaway/">Sridharan et al.</a></p>
-<p align="center">
-<img src="img/intro-uber.png" height=220px style="-webkit-filter: drop-shadow(5px 5px 5px #222); filter: drop-shadow(5px 5px 5px #222);"/>
-</p>
+<p><strong>Measures Yield Refined Constructors</strong></p>
+<pre class="spec"><code>   []  :: {v:[a] | length v = 0}
+   (:) :: a -&gt; t:[a] -&gt; {v:[a] | length v = 1 + length t}
+</code></pre>
+<div class="mybreak">
+<br>
+</div>
+<p><strong>Where <code>length</code> is uninterpreted in refinement Logic</strong></p>
 </div>
 <div id="slide-9" class="slide">
-<h2 id="analysis-influences-programs-design-3">Analysis Influences Program's Design</h2>
+<h2 id="properties-of-structures-5">Properties of Structures</h2>
 <p><br></p>
-<p>Static Analysis at Google <a href="https://ai.google/research/pubs/pub46576">Sadowski et al. 2018</a></p>
-<p align="center">
-<img src="img/intro-google.png" height=220px style="-webkit-filter: drop-shadow(5px 5px 5px #222); filter: drop-shadow(5px 5px 5px #222);"/>
-</p>
+<p><strong>Measures Yield Refined Constructors</strong></p>
+<pre class="spec"><code>   []  :: {v:[a] | length v = 0}
+   (:) :: a -&gt; t:[a] -&gt; {v:[a] | length v = 1 + length t}
+</code></pre>
+<div class="mybreak">
+<br>
+</div>
+<p><strong>Where <code>length</code> is uninterpreted in refinement Logic</strong></p>
+<div class="mybreak">
+<br>
+</div>
+<p>Now plain refinement typing &quot;just works&quot; for properties of structures!</p>
 </div>
 <div id="slide-10" class="slide">
-<h2 id="analysis-influences-programs-design-4">Analysis Influences Program's Design</h2>
-<p><br></p>
-<p>Infer Analysis at Facebook <a href="https://research.fb.com/popl-2019-most-influential-paper-award-for-research-that-led-to-facebook-infer/">Calcagno et al. 2018</a></p>
-<p align="center">
-<img src="img/intro-fb.png" height=250px style="-webkit-filter: drop-shadow(5px 5px 5px #222); filter: drop-shadow(5px 5px 5px #222);"/>
-</p>
+<h2 id="example-map-over-lists">Example: <code>map</code> over Lists</h2>
+<p>A datatype for homework scores, function to compute their average:</p>
+<div id="program-pane-4" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-4" class="programbox">data Hw = Hw { getName  :: String  -- ^ Student's Name
+             , getScore :: Int     -- ^ Student's Score  
+             }
+
+hwAverage :: [Hw] -> Int
+hwAverage hws = average (map getScore hws)
+
+map :: (a -> b) -> [a] -> [b] 
+map f []     = []
+map f (x:xs) = f x : map f xs</div>
+</div>
+
+<p><strong>Exercise:</strong> What's the problem here? Can you fix it?</p>
 </div>
 <div id="slide-11" class="slide">
-<h2 id="programmers-analysis-verification-1">Program<em>mer's</em> Analysis &amp; Verification</h2>
-<p align="center">
-<img src="img/intro2.png" height=330px/>
-</p>
+<h2 id="recap-properties-of-structures">Recap: Properties of Structures</h2>
+<div class="mybreak">
+<br>
+</div>
+<p><strong>Measures specify properties as functions over Structures</strong></p>
+<pre class="spec"><code>                 {-@ measure length @-}
+                 length       :: [a] -&gt; Nat
+                 length []    = 0
+                 length (_:t) = 1 + length t
+</code></pre>
 </div>
 <div id="slide-12" class="slide">
-<h2 id="program-influences-analysis-abilities">Program Influences Analysis' Abilities</h2>
-<p align="center">
-<img src="img/intro-out0.png" height=330px/>
-</p>
+<h2 id="recap-properties-of-structures-1">Recap: Properties of Structures</h2>
+<div class="mybreak">
+<br>
+</div>
+<p><strong>Measures specify properties as functions over Structures</strong></p>
+<pre class="spec"><code>                 {-@ measure length @-}
+                 length       :: [a] -&gt; Nat
+                 length []    = 0
+                 length (_:t) = 1 + length t
+</code></pre>
+<div class="mybreak">
+<br>
+</div>
+<p><strong>Refined Constructor Types</strong></p>
+<pre class="spec"><code>   []  :: {v:[a] | length v = 0}
+   (:) :: a -&gt; t:[a] -&gt; {v:[a] | length v = 1 + length t}
+</code></pre>
 </div>
 <div id="slide-13" class="slide">
-<h2 id="program-influences-analysis-abilities-1">Program Influences Analysis' Abilities</h2>
-<p align="center">
-<img src="img/intro-out1.png" height=330px/>
-</p>
+<h2 id="recap-properties-of-structures-2">Recap: Properties of Structures</h2>
+<div class="mybreak">
+<br>
+</div>
+<p><strong>Refined Constructor Types</strong></p>
+<pre class="spec"><code>   []  :: {v:[a] | length v = 0}
+   (:) :: a -&gt; t:[a] -&gt; {v:[a] | length v = 1 + length t}
+</code></pre>
+<p><strong>Generalize Properties</strong></p>
+<p>During <em>construction</em> i.e. <em>applying</em> type of <code>[]</code> and <code>(:)</code></p>
+<div class="mybreak">
+<br>
+</div>
 </div>
 <div id="slide-14" class="slide">
-<h2 id="language-integrated-verification-live">Language Integrated Verification (LIVE)</h2>
-<p align="center">
-<img src="img/intro2.png" height=260px/>
-</p>
-<p><br></p>
-<p>This tutorial: <strong>LIVE with Refinement Types</strong></p>
+<h2 id="recap-properties-of-structures-3">Recap: Properties of Structures</h2>
+<div class="mybreak">
+<br>
+</div>
+<p><strong>Refined Constructor Types</strong></p>
+<pre class="spec"><code>   []  :: {v:[a] | length v = 0}
+   (:) :: a -&gt; t:[a] -&gt; {v:[a] | length v = 1 + length t}
+</code></pre>
+<p><strong>Generalize Properties</strong></p>
+<p>During <em>construction</em> i.e. <em>applying</em> type of <code>[]</code> and <code>(:)</code></p>
+<div class="mybreak">
+<br>
+</div>
+<p><strong>Instantiate Properties</strong></p>
+<p>During <em>pattern-matching</em> i.e. <em>unapplying</em> type of <code>[]</code> and <code>(:)</code></p>
 </div>
 <div id="slide-15" class="slide">
-<h2 id="live-with-refinement-types">LIVE with Refinement Types</h2>
-<p><br></p>
-<p><strong>Tutorial Goals</strong></p>
-<p><br></p>
-<p>Why and how to <em>use</em> Refinement Types</p>
-<p><br></p>
-<p>How to <em>implement</em> Refinement Types</p>
+<h2 id="multiple-measures-are-conjoined">Multiple Measures are Conjoined</h2>
+<p><br> <br></p>
+<p>We wrote multiple measures for lists</p>
+<pre class="spec"><code>                 length :: [a] -&gt; Nat
+                 elems  :: [a] -&gt; Set a
+</code></pre>
 </div>
 <div id="slide-16" class="slide">
+<h2 id="multiple-measures-are-conjoined-1">Multiple Measures are Conjoined</h2>
+<p>We wrote multiple measures for lists</p>
+<pre class="spec"><code>                 length :: [a] -&gt; Nat
+                 elems  :: [a] -&gt; Set a
+</code></pre>
+<p>Their data constructor refinements are <strong>conjoined</strong></p>
+<pre class="spec"><code>  []  :: {v:[a] | length v = 0 &amp;&amp; elems v = empty}
+  (:) :: x:a -&gt; xs:[a] -&gt; {v:[a] |  length v = 1 + length xs
+                                 &amp;&amp; elems v  = addElem x  xs }
+</code></pre>
+<p><strong>Allows programmer to easily <em>extend</em> properties</strong></p>
+</div>
+<div id="slide-17" class="slide">
 <h2 id="plan">Plan</h2>
 <p><br></p>
-<p><strong>Part I:</strong> <strong><a href="02-refinements.html">Refinements 101</a></strong></p>
+<p><strong>Part I:</strong> <a href="02-refinements.html">Refinements 101</a></p>
 <p>Case Study: <a href="03-example-vectors.html">Vector Bounds</a></p>
 <p><strong>Part II:</strong> <a href="04-data-properties.html">Properties of Structures</a></p>
-<p>Case Study: <a href="05-example-sort.html">Sorting</a>, <a href="06-example-interpreter.html">Interpreter</a></p>
+<p>Case Study: <strong><a href="05-example-sort.html">Sorting</a></strong>, <a href="06-example-interpreter.html">Interpreter</a></p>
 <p><strong>Part III:</strong> <a href="07-data-legal.html">Invariants of Data Structures</a></p>
 <p>Case Study: <a href="08-example-sort.html">Sorting actually Sorts Lists</a></p>
 <p><strong>Part IV:</strong> <a href="09-termination.html">Termination</a> and <a href="10-reflection.html">Correctness Proofs</a></p>

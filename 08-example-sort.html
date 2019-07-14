@@ -401,148 +401,266 @@ MathJax.Hub.Config({
     <span class="glyphicon glyphicon-play"></span>
   </button>
  
-  <div id="program-0" class="programbox">module Intro where
+  <div id="program-0" class="programbox">{-@ LIQUID "--short-names"    @-}
+{-@ LIQUID "--no-warnings"    @-}
+{-@ LIQUID "--no-termination" @-}
 
-dummy :: Int
-dummy = 7</div>
+module Sort () where
+
+infixr 5 :< 
+
+data OList a = Emp 
+             | (:<) { oHd :: a, oTl :: OList a }
+
+incList, decList, diffList :: [Int]</div>
 </div>
 
-</div>
-<div class="slide">
-<p><br> <br> <br></p>
-<p align="center">
-<h1 style="border-bottom:none">
-Verification with Refinement Types
-</h1>
-<p><br></p>
-<h4 style="border-bottom:none">
-<font color="#1569C7">Ranjit Jhala</font>
-</h4>
-<p><br></p>
-<h4 style="border-bottom:none">
-<font color="green"> UC San Diego &amp; AWS/ARG </font>
-</h4>
-</p>
 </div>
 <div id="slide-0" class="slide">
-<h2 id="awsarg">AWS/ARG</h2>
-<p align="center">
-<img src="img/arg_intern_add.jpeg" height=280px/>
-</p>
+<h2 id="case-study-sorting-lists-revisited">Case Study: Sorting Lists (Revisited)</h2>
+<p><br></p>
+<p><strong>Recall our datatype for Ordered Lists</strong></p>
+<p>(Each) head-value <code>oHd</code> no bigger than <em>each</em> tail-value in <code>oTl</code></p>
+<div id="program-pane-1" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-1" class="programbox">{-@ data OList a = Emp
+                 | (:<) {oHd :: a, oTl :: OList {v:a|oHd<=v}}
+  @-}
+
+okList :: OList Int
+okList  = 1 :< 2 :< 3 :< Emp      -- legal 
+
+badList :: OList Int
+badList = 1 :< 3 :< 2 :< Emp      -- illegal</div>
+</div>
+
+<div class="mybreak">
+<br>
+</div>
+<p>Lets use it to implement <font color="#1569C7"><strong>Insertion Sort</strong></font> and <strong>Merge-Sort</strong></p>
 </div>
 <div id="slide-1" class="slide">
-<h2 id="follow-along-at-this-url">Follow Along at This URL</h2>
-<p><br> <br> <br></p>
-<p><a href="http://ranjitjhala.github.io/CAV2019-tutorial/" class="uri">http://ranjitjhala.github.io/CAV2019-tutorial/</a></p>
+<h2 id="exercise-insertion-sort-actually-sorts">Exercise: Insertion Sort actually Sorts</h2>
 <p><br></p>
-<p><strong>Zoom in</strong> to see nav arrows</p>
+<p><strong>Update our code to verify that the output is sorted</strong></p>
+<div id="program-pane-2" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-2" class="programbox">{- 
+isort :: (Ord a) => [a] -> OList a
+isort []       = Emp 
+isort (x:xs)   = insert x (isort xs)
+
+insert :: (Ord a) => a -> OList a -> OList a 
+insert x (y:ys)
+  | x <= y     = y : x : ys
+  | otherwise  = y : insert x ys
+insert x []    = [x] 
+-}</div>
+</div>
+
+<p><strong>Exercise:</strong> Yikes, so much red. Can you fix it?</p>
 </div>
 <div id="slide-2" class="slide">
-<h2 id="program-analysis-verification">Program Analysis &amp; Verification</h2>
-<p><br> <br> <br> <br></p>
-<p>Why limited broader impact and adoption?</p>
+<h2 id="exercise-merge-sort-actually-sorts">Exercise: Merge Sort actually Sorts</h2>
+<p><strong>Exercise:</strong> Update our code to verify that the output is sorted</p>
+<div id="program-pane-3" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-3" class="programbox">{- 
+msort :: (Ord a) => [a] -> OList a
+msort []   = []
+msort [x]  = [x]
+msort xs   = let (xs1, xs2) = split xs in
+               merge (msort xs1) (msort xs2)
+
+split :: [a] -> ([a], [a]) 
+split (x:y:zs) = let (xs, ys) = split zs in 
+                   (x:xs, y:ys) 
+split xs       = (xs, [])
+
+merge :: [a] -> [a] -> [a]  
+merge xs []         = xs
+merge [] ys         = ys
+merge (x:xs) (y:ys)
+  | x <= y          = x : merge xs (y:ys)
+  | otherwise       = y : merge (x:xs) y
+-}</div>
+</div>
+
 </div>
 <div id="slide-3" class="slide">
-<h2 id="program-analysis-verification-1">Program Analysis &amp; Verification</h2>
-<p>Why limited broader impact and adoption?</p>
-<p align="center">
-<img src="img/intro0.png" height=280px/>
-</p>
+<h2 id="invariants-in-constructors">Invariants In Constructors</h2>
+<p><br> <br> <br> <br></p>
+<p>Make illegal values unrepresentable!</p>
+<div class="mybreak">
+<br>
+</div>
+<p>But tedious to have <strong>multiple list types</strong> ...</p>
 </div>
 <div id="slide-4" class="slide">
-<h2 id="program-analysis-verification-2">Program Analysis &amp; Verification</h2>
-<p>Why limited broader impact and adoption?</p>
-<p align="center">
-<img src="img/intro1.png" height=280px/>
-</p>
+<h2 id="abstracting-refinements">Abstracting Refinements</h2>
+<p><br> <br> <br> <br></p>
+<p><strong>Parameterize refinements over types</strong></p>
+<p>i.e. <em>decouple</em> the invariant from the data structure</p>
 </div>
 <div id="slide-5" class="slide">
-<h2 id="programmers-analysis-verification">Program<em>mer's</em> Analysis &amp; Verification</h2>
-<p align="center">
-<img src="img/intro2.png" height=330px/>
-</p>
+<h2 id="abstracting-refinements-1">Abstracting Refinements</h2>
+<div class="mybreak">
+<br>
+</div>
+<p><strong>Parameterize refinements over types</strong></p>
+<div class="mybreak">
+<br>
+</div>
+<pre class="spec"><code>                   data [a]&lt;rel :: a -&gt; a -&gt; Bool&gt; where
+                     = []
+                     | (:) { hd :: a
+                           , tl :: [{v:a | rel hd v}]}
+</code></pre>
 </div>
 <div id="slide-6" class="slide">
-<h2 id="analysis-influences-programs-design">Analysis Influences Program's Design</h2>
-<p align="center">
-<img src="img/intro-fp0.png" height=330px/>
-</p>
+<h2 id="abstracting-refinements-2">Abstracting Refinements</h2>
+<div class="mybreak">
+<br>
+</div>
+<p><strong>Parameterize refinements over types</strong></p>
+<pre class="spec"><code>                   data [a]&lt;rel :: a -&gt; a -&gt; Bool&gt; where
+                     = []
+                     | (:) { hd :: a
+                           , tl :: [{v:a | rel hd v}]}
+</code></pre>
+<p><strong>Refinement says <code>rel hd v</code> holds for <em>every</em> value <code>v</code> in <code>tl</code></strong></p>
+<p><code>rel</code> is <code>&lt;=</code> means list is increasing</p>
+<p><code>rel</code> is <code>&gt;=</code> means list is increasing</p>
+<p><code>rel</code> is <code>!=</code> means list is all-unique</p>
 </div>
 <div id="slide-7" class="slide">
-<h2 id="analysis-influences-programs-design-1">Analysis Influences Program's Design</h2>
-<p align="center">
-<img src="img/intro-fp1.png" height=330px/>
-</p>
+<h2 id="abstracting-refinements-3">Abstracting Refinements</h2>
+<div class="mybreak">
+<br>
+</div>
+<p><strong>Instantiate</strong> refinements to get different invariants!</p>
+<div id="program-pane-4" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-4" class="programbox">{-@ type Incrs a = [a]<{\x y -> x <= y}> @-}
+{-@ incList :: Incrs Int @-}
+incList = [1,2,3]
+
+{-@ type Decrs a = [a]<{\x y -> x >= y}> @-}
+{-@ decList :: Decrs Int @-}
+decList = [1,2,3]
+
+{-@ type Diffs a = [a]<{\x y -> x != y}> @-}
+{-@ diffList :: Diffs Int @-}
+diffList = [3,1,1]</div>
+</div>
+
 </div>
 <div id="slide-8" class="slide">
-<h2 id="analysis-influences-programs-design-2">Analysis Influences Program's Design</h2>
-<p><br></p>
-<p>Uber NullAway <a href="https://eng.uber.com/nullaway/">Sridharan et al.</a></p>
-<p align="center">
-<img src="img/intro-uber.png" height=220px style="-webkit-filter: drop-shadow(5px 5px 5px #222); filter: drop-shadow(5px 5px 5px #222);"/>
-</p>
+<h2 id="abstract-refinements-insertion-sort">Abstract Refinements: Insertion Sort</h2>
+<div class="mybreak">
+<br>
+</div>
+<p><strong>Inference FTW!</strong></p>
+<div id="program-pane-5" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-5" class="programbox">{-
+{-@ isort' :: (Ord a) => [a] -> Incrs a @-}
+isort' :: (Ord a) => [a] -> [a]
+isort' []      = [] 
+isort' (x:xs)  = insert' x (isort' xs)
+
+insert' :: (Ord a) => a -> [a] -> [a]
+insert' x (y:ys)
+  | x <= y       = x : y : ys
+  | otherwise    = y : insert' x ys
+insert' x []     = [x]
+-}</div>
+</div>
+
 </div>
 <div id="slide-9" class="slide">
-<h2 id="analysis-influences-programs-design-3">Analysis Influences Program's Design</h2>
-<p><br></p>
-<p>Static Analysis at Google <a href="https://ai.google/research/pubs/pub46576">Sadowski et al. 2018</a></p>
-<p align="center">
-<img src="img/intro-google.png" height=220px style="-webkit-filter: drop-shadow(5px 5px 5px #222); filter: drop-shadow(5px 5px 5px #222);"/>
-</p>
+<h2 id="abstract-refinements-merge-sort">Abstract Refinements: Merge Sort</h2>
+<p><strong>Inference FTW!</strong></p>
+<div id="program-pane-6" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-6" class="programbox">{-  {-@ msort' :: (Ord a) => [a] -> Incrs a @-}
+msort' :: (Ord a) => [a] -> [a]
+msort' []   = []
+msort' xs   = let (xs1, xs2) = split' xs in
+                merge' (msort' xs1) (msort' xs2)
+
+split' :: [a] -> ([a], [a]) 
+split' (x:y:zs) = let (xs, ys) = split' zs in 
+                   (x:xs, y:ys) 
+split' xs       = (xs, [])
+
+merge' :: (Ord a) => [a] -> [a] -> [a]  
+merge' xs []         = xs
+merge' [] ys         = ys
+merge' (x:xs) (y:ys)
+  | x <= y           = x : merge' xs (y:ys)
+  | otherwise        = y : merge' (x:xs) ys    -}</div>
+</div>
+
 </div>
 <div id="slide-10" class="slide">
-<h2 id="analysis-influences-programs-design-4">Analysis Influences Program's Design</h2>
-<p><br></p>
-<p>Infer Analysis at Facebook <a href="https://research.fb.com/popl-2019-most-influential-paper-award-for-research-that-led-to-facebook-infer/">Calcagno et al. 2018</a></p>
-<p align="center">
-<img src="img/intro-fb.png" height=250px style="-webkit-filter: drop-shadow(5px 5px 5px #222); filter: drop-shadow(5px 5px 5px #222);"/>
-</p>
+<h2 id="recap-invariant-via-refined-constructors">Recap: Invariant via Refined Constructors</h2>
+<p><br> <br> <br></p>
+<pre class="spec"><code>             Emp  :: OList a
+             (:&lt;) :: oHd:a -&gt; OList {v:a |oHd &lt; v} -&gt; OList a 
+</code></pre>
+<div class="mybreak">
+<br>
+</div>
+<p><strong>Invariant <em>Checked</em> at Construction and <em>Instantiated</em> at Pattern-Matching</strong></p>
+<p>Simply by <em>applying</em> and <em>un-applying</em> refined constructor type!</p>
 </div>
 <div id="slide-11" class="slide">
-<h2 id="programmers-analysis-verification-1">Program<em>mer's</em> Analysis &amp; Verification</h2>
-<p align="center">
-<img src="img/intro2.png" height=330px/>
-</p>
-</div>
-<div id="slide-12" class="slide">
-<h2 id="program-influences-analysis-abilities">Program Influences Analysis' Abilities</h2>
-<p align="center">
-<img src="img/intro-out0.png" height=330px/>
-</p>
-</div>
-<div id="slide-13" class="slide">
-<h2 id="program-influences-analysis-abilities-1">Program Influences Analysis' Abilities</h2>
-<p align="center">
-<img src="img/intro-out1.png" height=330px/>
-</p>
-</div>
-<div id="slide-14" class="slide">
-<h2 id="language-integrated-verification-live">Language Integrated Verification (LIVE)</h2>
-<p align="center">
-<img src="img/intro2.png" height=260px/>
-</p>
-<p><br></p>
-<p>This tutorial: <strong>LIVE with Refinement Types</strong></p>
-</div>
-<div id="slide-15" class="slide">
-<h2 id="live-with-refinement-types">LIVE with Refinement Types</h2>
-<p><br></p>
-<p><strong>Tutorial Goals</strong></p>
-<p><br></p>
-<p>Why and how to <em>use</em> Refinement Types</p>
-<p><br></p>
-<p>How to <em>implement</em> Refinement Types</p>
-</div>
-<div id="slide-16" class="slide">
 <h2 id="plan">Plan</h2>
 <p><br></p>
-<p><strong>Part I:</strong> <strong><a href="02-refinements.html">Refinements 101</a></strong></p>
+<p><strong>Part I:</strong> <a href="02-refinements.html">Refinements 101</a></p>
 <p>Case Study: <a href="03-example-vectors.html">Vector Bounds</a></p>
 <p><strong>Part II:</strong> <a href="04-data-properties.html">Properties of Structures</a></p>
 <p>Case Study: <a href="05-example-sort.html">Sorting</a>, <a href="06-example-interpreter.html">Interpreter</a></p>
 <p><strong>Part III:</strong> <a href="07-data-legal.html">Invariants of Data Structures</a></p>
-<p>Case Study: <a href="08-example-sort.html">Sorting actually Sorts Lists</a></p>
-<p><strong>Part IV:</strong> <a href="09-termination.html">Termination</a> and <a href="10-reflection.html">Correctness Proofs</a></p>
+<p>Case Study: <a href="08-example-sort.html">Sorting actually Sorts</a></p>
+<p><strong>Part IV:</strong> <strong><a href="09-termination.html">Termination</a></strong> and <a href="10-reflection.html">Correctness Proofs</a></p>
 <p>Case Study: <a href="11-example-opt.html">Optimizing Arithmetic Expressions</a></p>
 </div>
 

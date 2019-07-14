@@ -401,149 +401,326 @@ MathJax.Hub.Config({
     <span class="glyphicon glyphicon-play"></span>
   </button>
  
-  <div id="program-0" class="programbox">module Intro where
+  <div id="program-0" class="programbox">{-# LANGUAGE PartialTypeSignatures #-}
+{-@ LIQUID "--reflection" @-}
+{-@ LIQUID "--ple"        @-}
+{-@ LIQUID "--diff"       @-}
+{-@ infixr ++             @-}  -- TODO: Silly to have to rewrite this annotation!
 
-dummy :: Int
-dummy = 7</div>
+module Opt where
+
+import           Prelude hiding ((++), const, max, or)
+
+asimp       :: AExp -> AExp 
+lemma_asimp :: AExp -> State -> _ 
+
+cplus       :: Int -> AExp -> AExp
+lemma_cplus :: Int -> AExp -> State -> _
+
+nplus       :: AExp -> AExp -> AExp 
+lemma_nplus :: AExp -> AExp -> State -> _ 
+
+norm        :: AExp -> AExp 
+lemma_norm  :: AExp -> State -> _ 
+
+(&&&) :: a -> a -> a
+x &&& _ = x
+
+-- {-@ lemma_asimp :: a:_ -> s:_ -> {aval (asimp a) s = aval a s} @-}
+-- lemma_asimp (AVal _)     _ = ()
+-- lemma_asimp (AVar _)     _ = ()
+-- lemma_asimp (AAdd a1 a2) s = case (asimp a1, asimp a2) of 
+    -- (AVal _, AVal _) -> lemma_asimp a1 s &&& lemma_asimp a2 s 
+    -- (b1    , b2    ) -> lemma_asimp a1 s &&& lemma_asimp a2 s</div>
 </div>
 
-</div>
-<div class="slide">
-<p><br> <br> <br></p>
-<p align="center">
-<h1 style="border-bottom:none">
-Verification with Refinement Types
-</h1>
-<p><br></p>
-<h4 style="border-bottom:none">
-<font color="#1569C7">Ranjit Jhala</font>
-</h4>
-<p><br></p>
-<h4 style="border-bottom:none">
-<font color="green"> UC San Diego &amp; AWS/ARG </font>
-</h4>
-</p>
 </div>
 <div id="slide-0" class="slide">
-<h2 id="awsarg">AWS/ARG</h2>
-<p align="center">
-<img src="img/arg_intern_add.jpeg" height=280px/>
-</p>
+<h2 id="case-study-optimizing-expressions">Case Study: Optimizing Expressions</h2>
+<p>Lets define and &quot;prove correct&quot; some simple code transformations</p>
 </div>
 <div id="slide-1" class="slide">
-<h2 id="follow-along-at-this-url">Follow Along at This URL</h2>
-<p><br> <br> <br></p>
-<p><a href="http://ranjitjhala.github.io/CAV2019-tutorial/" class="uri">http://ranjitjhala.github.io/CAV2019-tutorial/</a></p>
-<p><br></p>
-<p><strong>Zoom in</strong> to see nav arrows</p>
+<h2 id="recall-state">Recall: State</h2>
+<div id="program-pane-1" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-1" class="programbox">data State 
+  = Emp                   -- ^ Empty  `State`
+  | Bind Var Val State    -- ^ Extend `State` by assigning `Var` to `Val`
+
+-- | Lookup the value of `x` in `s`
+
+{-@ reflect get @-}
+get :: Var -> State -> Val
+get x (Bind y v s) 
+  | x == y    = v         -- ^ found the variable `x`, return v
+  | otherwise = get x s   -- ^ recursively search `s`
+get x Emp     = 0         -- ^ simplification</div>
+</div>
+
 </div>
 <div id="slide-2" class="slide">
-<h2 id="program-analysis-verification">Program Analysis &amp; Verification</h2>
-<p><br> <br> <br> <br></p>
-<p>Why limited broader impact and adoption?</p>
+<h2 id="recall-arithmetic-expressions">Recall: Arithmetic Expressions</h2>
+<div id="program-pane-2" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-2" class="programbox">type Var = String
+
+type Val = Int
+
+data AExp 
+  = AVar Var       -- ^ x
+  | AVal Val       -- ^ v
+  | AAdd AExp AExp -- ^ e1 + e2 </div>
+</div>
+
 </div>
 <div id="slide-3" class="slide">
-<h2 id="program-analysis-verification-1">Program Analysis &amp; Verification</h2>
-<p>Why limited broader impact and adoption?</p>
-<p align="center">
-<img src="img/intro0.png" height=280px/>
-</p>
+<h2 id="recall-evaluating-expressions-in-some-state">Recall: Evaluating Expressions in some <code>State</code></h2>
+<div id="program-pane-3" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-3" class="programbox">{-@ reflect aval @-}
+aval :: AExp -> State -> Val
+aval (AVal v)     _  = v
+aval (AVar x)     st = get x st
+aval (AAdd e1 e2) st = (aval e1 st) + (aval e2 st)</div>
+</div>
+
 </div>
 <div id="slide-4" class="slide">
-<h2 id="program-analysis-verification-2">Program Analysis &amp; Verification</h2>
-<p>Why limited broader impact and adoption?</p>
-<p align="center">
-<img src="img/intro1.png" height=280px/>
-</p>
+<h2 id="optimal-expressions">Optimal Expressions</h2>
+<p><strong>An expression is &quot;optimal&quot; if it has no sub-term <code>AAdd n1 n2</code></strong></p>
+<p>Such subterms should be replaced by <code>AAdd (n1+n2)</code></p>
+<div id="program-pane-4" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-4" class="programbox">{-@ measure optimal @-}
+optimal :: AExp -> Bool 
+optimal (AVal _)     = True 
+optimal (AVar _)     = True 
+optimal (AAdd a1 a2) = optimal a1 && optimal a2 
+                    && not (const a1 && const a2)
+
+{-@ measure const @-}
+const :: AExp -> Bool 
+const (AVal _) = True 
+const _        = False </div>
+</div>
+
 </div>
 <div id="slide-5" class="slide">
-<h2 id="programmers-analysis-verification">Program<em>mer's</em> Analysis &amp; Verification</h2>
-<p align="center">
-<img src="img/intro2.png" height=330px/>
-</p>
+<h2 id="simplifying-expressions-to-make-them-optimal">Simplifying Expressions to make them Optimal</h2>
+<div id="program-pane-5" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-5" class="programbox">{-@ reflect asimp @-}
+{-@ asimp :: _ -> {v:_ | optimal v} @-} 
+asimp (AVal n)     = AVal n
+asimp (AVar x)     = AVar x  
+asimp (AAdd a1 a2) = case (asimp a1, asimp a2) of 
+                       (AVal n1, AVal n2) -> AVal (n1 + n2) 
+                       (b1     , b2)      -> AAdd b1 b2</div>
+</div>
+
 </div>
 <div id="slide-6" class="slide">
-<h2 id="analysis-influences-programs-design">Analysis Influences Program's Design</h2>
-<p align="center">
-<img src="img/intro-fp0.png" height=330px/>
-</p>
+<h2 id="lets-prove-that-asimp-is-correct">Lets Prove that <code>asimp</code> is &quot;Correct&quot;</h2>
+<p><strong>Exercise:</strong> How can we <em>specify</em> (and then <em>verify</em>) correctness?</p>
+<div id="program-pane-6" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-6" class="programbox">-- {-@ lemma_asimp :: ??? @-}
+lemma_asimp _ = undefined</div>
+</div>
+
 </div>
 <div id="slide-7" class="slide">
-<h2 id="analysis-influences-programs-design-1">Analysis Influences Program's Design</h2>
-<p align="center">
-<img src="img/intro-fp1.png" height=330px/>
-</p>
+<h2 id="another-transformation-normalizing">Another Transformation: &quot;Normalizing&quot;</h2>
+<p><strong>Expressions in <em>Normal Form</em></strong></p>
+<p><code>x1 + (x2 + ... (xn + c))</code></p>
+<p>Sum of variables <code>x1 ... xn</code> plus a single constant <code>c</code> at the end</p>
 </div>
 <div id="slide-8" class="slide">
-<h2 id="analysis-influences-programs-design-2">Analysis Influences Program's Design</h2>
-<p><br></p>
-<p>Uber NullAway <a href="https://eng.uber.com/nullaway/">Sridharan et al.</a></p>
-<p align="center">
-<img src="img/intro-uber.png" height=220px style="-webkit-filter: drop-shadow(5px 5px 5px #222); filter: drop-shadow(5px 5px 5px #222);"/>
-</p>
+<h2 id="specifying-normal-forms">Specifying Normal Forms</h2>
+<p><strong>Expressions in <em>Normal Form</em></strong></p>
+<p><code>x1 + (x2 + ... (xn + c))</code></p>
+<p>Sum of variables <code>x1 ... xn</code> plus a single constant <code>c</code> at the end</p>
+<div id="program-pane-7" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-7" class="programbox">{-@ measure is_normal @-}
+is_normal :: AExp -> Bool 
+is_normal (AAdd a1 a2) = is_var a1 && is_normal a2 
+is_normal a            = True 
+
+{-@ measure is_var @-}
+is_var :: AExp -> Bool 
+is_var (AVar _) = True 
+is_var _        = False 
+
+{-@ type NAExp = {a:AExp| is_normal a } @-}</div>
+</div>
+
 </div>
 <div id="slide-9" class="slide">
-<h2 id="analysis-influences-programs-design-3">Analysis Influences Program's Design</h2>
-<p><br></p>
-<p>Static Analysis at Google <a href="https://ai.google/research/pubs/pub46576">Sadowski et al. 2018</a></p>
-<p align="center">
-<img src="img/intro-google.png" height=220px style="-webkit-filter: drop-shadow(5px 5px 5px #222); filter: drop-shadow(5px 5px 5px #222);"/>
-</p>
+<h2 id="how-to-normalize-expressions">How to Normalize Expressions?</h2>
+<p>Lets do it in three steps:</p>
+<p><strong>Step 1</strong></p>
+<p>Add a constant <code>n</code> to an <code>NAExp</code></p>
+<p>*Step 2**</p>
+<p>Add a <code>NAExp</code> to another <code>NAExp</code></p>
+<p>*Step 3**</p>
+<p>Recursively normalize subexpressions and then Step 2</p>
 </div>
 <div id="slide-10" class="slide">
-<h2 id="analysis-influences-programs-design-4">Analysis Influences Program's Design</h2>
-<p><br></p>
-<p>Infer Analysis at Facebook <a href="https://research.fb.com/popl-2019-most-influential-paper-award-for-research-that-led-to-facebook-infer/">Calcagno et al. 2018</a></p>
-<p align="center">
-<img src="img/intro-fb.png" height=250px style="-webkit-filter: drop-shadow(5px 5px 5px #222); filter: drop-shadow(5px 5px 5px #222);"/>
-</p>
+<h2 id="step-1-add-a-constant-to-an-naexp">Step 1: Add a Constant to an <code>NAExp</code></h2>
+<div id="program-pane-8" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-8" class="programbox">{-@ reflect cplus @-}
+{-@ cplus :: Int -> NAExp -> NAExp @-}
+cplus n (AAdd a1 a2) = AAdd a1       (cplus n a2)
+cplus n (AVar x)     = AAdd (AVar x) (AVal n) 
+cplus n (AVal m)     = AVal (n + m)</div>
+</div>
+
 </div>
 <div id="slide-11" class="slide">
-<h2 id="programmers-analysis-verification-1">Program<em>mer's</em> Analysis &amp; Verification</h2>
-<p align="center">
-<img src="img/intro2.png" height=330px/>
-</p>
+<h2 id="step-1-why-is-it-correct">Step 1: Why is it &quot;correct&quot;?</h2>
+<p><strong>Proof follows structure of <code>lemma_cplus</code></strong></p>
+<div id="program-pane-9" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-9" class="programbox">{-@ lemma_cplus :: n:Int -> a:NAExp -> s:_ -> 
+      {aval (cplus n a) s = n + aval a s} 
+  @-}
+lemma_cplus n (AAdd a1 a2) s = lemma_cplus n a2 s 
+lemma_cplus n (AVar _)     _ = () 
+lemma_cplus n (AVal _)     _ = () </div>
+</div>
+
 </div>
 <div id="slide-12" class="slide">
-<h2 id="program-influences-analysis-abilities">Program Influences Analysis' Abilities</h2>
-<p align="center">
-<img src="img/intro-out0.png" height=330px/>
-</p>
+<h2 id="step-2-add-an-naexp-to-another-naexp">Step 2: Add an <code>NAExp</code> to another <code>NAExp</code></h2>
+<p><strong>This is the tricky one</strong></p>
+<div id="program-pane-10" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-10" class="programbox">{-@ reflect nplus @-}
+{-@ nplus :: NAExp -> NAExp -> NAExp @-} 
+nplus (AAdd a1 a2) b = AAdd a1 (nplus a2 b)
+nplus (AVal n)     b = cplus n b
+nplus (AVar x)     b = AAdd (AVar x) b </div>
+</div>
+
 </div>
 <div id="slide-13" class="slide">
-<h2 id="program-influences-analysis-abilities-1">Program Influences Analysis' Abilities</h2>
-<p align="center">
-<img src="img/intro-out1.png" height=330px/>
-</p>
+<h2 id="step-2-why-is-it-correct">Step 2: Why is it &quot;correct&quot;?</h2>
+<p><strong>Proof follows structure of <code>lemma_nplus</code></strong></p>
+<div id="program-pane-11" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-11" class="programbox">{-@ lemma_nplus :: a:NAExp -> b:NAExp -> s:_ -> 
+      {aval (nplus a b) s = aval a s + aval b s} 
+  @-}
+lemma_nplus (AAdd a1 a2) b s = lemma_nplus a2 b s
+lemma_nplus (AVal n)     b s = lemma_cplus n  b s 
+lemma_nplus (AVar x)     b s = () </div>
+</div>
+
 </div>
 <div id="slide-14" class="slide">
-<h2 id="language-integrated-verification-live">Language Integrated Verification (LIVE)</h2>
-<p align="center">
-<img src="img/intro2.png" height=260px/>
-</p>
-<p><br></p>
-<p>This tutorial: <strong>LIVE with Refinement Types</strong></p>
+<h2 id="step-3-recursively-normalize-and-nplus">Step 3: Recursively normalize and <code>nplus</code></h2>
+<p><strong>We did all the hard work already...</strong></p>
+<div id="program-pane-12" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-12" class="programbox">{-@ reflect norm @-}
+{-@ norm :: AExp -> NAExp @-} 
+norm (AAdd a1 a2) = nplus (norm a1) (norm a2)
+norm a            = a </div>
+</div>
+
 </div>
 <div id="slide-15" class="slide">
-<h2 id="live-with-refinement-types">LIVE with Refinement Types</h2>
-<p><br></p>
-<p><strong>Tutorial Goals</strong></p>
-<p><br></p>
-<p>Why and how to <em>use</em> Refinement Types</p>
-<p><br></p>
-<p>How to <em>implement</em> Refinement Types</p>
+<h2 id="step-3-why-is-it-correct">Step 3: Why is it &quot;correct&quot;?</h2>
+<p><strong>Proof follows structure of <code>lemma_nplus</code></strong></p>
+<div id="program-pane-13" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-13" class="programbox">{-@ lemma_norm :: a:_ -> s:_ -> {aval (norm a) s = aval a s} @-}
+lemma_norm (AAdd a1 a2) s = lemma_norm a1 s
+                        &&& lemma_norm a2 s
+                        &&& lemma_nplus (norm a1) (norm a2) s
+lemma_norm _ _            = ()</div>
 </div>
-<div id="slide-16" class="slide">
-<h2 id="plan">Plan</h2>
-<p><br></p>
-<p><strong>Part I:</strong> <strong><a href="02-refinements.html">Refinements 101</a></strong></p>
-<p>Case Study: <a href="03-example-vectors.html">Vector Bounds</a></p>
-<p><strong>Part II:</strong> <a href="04-data-properties.html">Properties of Structures</a></p>
-<p>Case Study: <a href="05-example-sort.html">Sorting</a>, <a href="06-example-interpreter.html">Interpreter</a></p>
-<p><strong>Part III:</strong> <a href="07-data-legal.html">Invariants of Data Structures</a></p>
-<p>Case Study: <a href="08-example-sort.html">Sorting actually Sorts Lists</a></p>
-<p><strong>Part IV:</strong> <a href="09-termination.html">Termination</a> and <a href="10-reflection.html">Correctness Proofs</a></p>
-<p>Case Study: <a href="11-example-opt.html">Optimizing Arithmetic Expressions</a></p>
+
 </div>
 
 </div>

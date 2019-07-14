@@ -401,148 +401,414 @@ MathJax.Hub.Config({
     <span class="glyphicon glyphicon-play"></span>
   </button>
  
-  <div id="program-0" class="programbox">module Intro where
+  <div id="program-0" class="programbox">{-# LANGUAGE TupleSections    #-}
+{-@ LIQUID "--no-warnings"    @-}
+{-@ LIQUID "--short-names"    @-}
+{-  LIQUID "--diff"           @-}
 
-dummy :: Int
-dummy = 7</div>
+module Termination where
+
+import Prelude hiding (reverse, sum, repeat)
+
+ack     :: Int -> Int -> Int
+range   :: Int -> Int -> [Int]
+fastSum :: Int -> Int -> Int
+
+-- {-@ split :: xs:[a] -> Halves a xs @-}
+-- {-@ type Halves a Xs = {v: (Half a Xs, Half a Xs) | len (fst v) + len (snd v) == len Xs} @-}
+-- {-@ type Half   a Xs = {v:[a] | (len Xs > 1) => (len v < len Xs)}                         @-}</div>
 </div>
 
-</div>
-<div class="slide">
-<p><br> <br> <br></p>
-<p align="center">
-<h1 style="border-bottom:none">
-Verification with Refinement Types
-</h1>
-<p><br></p>
-<h4 style="border-bottom:none">
-<font color="#1569C7">Ranjit Jhala</font>
-</h4>
-<p><br></p>
-<h4 style="border-bottom:none">
-<font color="green"> UC San Diego &amp; AWS/ARG </font>
-</h4>
-</p>
 </div>
 <div id="slide-0" class="slide">
-<h2 id="awsarg">AWS/ARG</h2>
-<p align="center">
-<img src="img/arg_intern_add.jpeg" height=280px/>
-</p>
+<h2 id="code-is-meant-to-be-run...">Code is meant to be run...</h2>
+<pre class="spec"><code>      msort :: (Ord a) =&gt; [a] -&gt; [a]
+      msort []   = []
+      msort xs   = let (xs1, xs2) = split xs in
+                      merge (msort xs1) (msort xs2)
+      
+      split :: [a] -&gt; ([a], [a]) 
+      split (x:y:zs) = let (xs, ys) = split zs in 
+                         (x:xs, y:ys) 
+      split xs       = (xs, [])
+      
+      merge :: (Ord a) =&gt; [a] -&gt; [a] -&gt; [a]  
+      merge xs []         = xs
+      merge [] ys         = ys
+      merge (x:xs) (y:ys)
+        | x &lt;= y           = x : merge xs (y:ys)
+        | otherwise        = y : merge (x:xs) ys  
+</code></pre>
 </div>
 <div id="slide-1" class="slide">
-<h2 id="follow-along-at-this-url">Follow Along at This URL</h2>
-<p><br> <br> <br></p>
-<p><a href="http://ranjitjhala.github.io/CAV2019-tutorial/" class="uri">http://ranjitjhala.github.io/CAV2019-tutorial/</a></p>
+<h2 id="code-is-meant-to-be-run...-1">Code is meant to be run...</h2>
 <p><br></p>
-<p><strong>Zoom in</strong> to see nav arrows</p>
 </div>
 <div id="slide-2" class="slide">
-<h2 id="program-analysis-verification">Program Analysis &amp; Verification</h2>
-<p><br> <br> <br> <br></p>
-<p>Why limited broader impact and adoption?</p>
+<h2 id="code-is-meant-to-be-run...and-finish">Code is meant to be run...and finish!</h2>
+<p><br> <br></p>
+<pre class="spec"><code>                λ&gt; :l msort.hs
+                [1 of 1] Compiling Main             ( msort.hs, interpreted )
+                Ok, modules loaded: Main.
+                λ&gt; msort []
+                []
+                λ&gt; msort [1,3,2]
+                
+</code></pre>
+<p><br></p>
 </div>
 <div id="slide-3" class="slide">
-<h2 id="program-analysis-verification-1">Program Analysis &amp; Verification</h2>
-<p>Why limited broader impact and adoption?</p>
+<h2 id="avoiding-infinite-loops">Avoiding Infinite Loops</h2>
 <p align="center">
-<img src="img/intro0.png" height=280px/>
+<img src="img/dog-chasing-tail.gif" height=350px/>
 </p>
 </div>
 <div id="slide-4" class="slide">
-<h2 id="program-analysis-verification-2">Program Analysis &amp; Verification</h2>
-<p>Why limited broader impact and adoption?</p>
-<p align="center">
-<img src="img/intro1.png" height=280px/>
-</p>
+<h2 id="lets-prove-termination">Lets prove termination!</h2>
+<p><br></p>
 </div>
 <div id="slide-5" class="slide">
-<h2 id="programmers-analysis-verification">Program<em>mer's</em> Analysis &amp; Verification</h2>
-<p align="center">
-<img src="img/intro2.png" height=330px/>
-</p>
+<h2 id="example-proving-termination-of-sum">Example: Proving Termination of <code>sum</code></h2>
+<p><br> <br></p>
+<div id="program-pane-1" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-1" class="programbox">sum :: Int -> Int
+sum 0 = 0
+sum n = n + sum (n - 1)</div>
+</div>
+
+<p><br> <br></p>
+<p><strong>Exercise:</strong> (Why) <em>does</em> this terminate?</p>
 </div>
 <div id="slide-6" class="slide">
-<h2 id="analysis-influences-programs-design">Analysis Influences Program's Design</h2>
+<h2 id="proving-termination">Proving Termination</h2>
 <p align="center">
-<img src="img/intro-fp0.png" height=330px/>
+<img src="img/falling-termination.jpg" height=350px/>
 </p>
 </div>
 <div id="slide-7" class="slide">
-<h2 id="analysis-influences-programs-design-1">Analysis Influences Program's Design</h2>
+<h2 id="proving-termination-1">Proving Termination</h2>
 <p align="center">
-<img src="img/intro-fp1.png" height=330px/>
+<img src="img/falling-termination.jpg" height=175px/>
 </p>
+<p><strong>Termination: A well founded metric decreases at each recursive call</strong></p>
 </div>
 <div id="slide-8" class="slide">
-<h2 id="analysis-influences-programs-design-2">Analysis Influences Program's Design</h2>
-<p><br></p>
-<p>Uber NullAway <a href="https://eng.uber.com/nullaway/">Sridharan et al.</a></p>
+<h2 id="proving-termination-2">Proving Termination</h2>
 <p align="center">
-<img src="img/intro-uber.png" height=220px style="-webkit-filter: drop-shadow(5px 5px 5px #222); filter: drop-shadow(5px 5px 5px #222);"/>
+<img src="img/falling-termination.jpg" height=175px/>
 </p>
+<p><strong>Termination: A well founded metric decreases at each recursive call</strong></p>
+<p>Metric gets <em>strictly smaller</em></p>
+<p>Metric has a <em>lower bound</em></p>
 </div>
 <div id="slide-9" class="slide">
-<h2 id="analysis-influences-programs-design-3">Analysis Influences Program's Design</h2>
-<p><br></p>
-<p>Static Analysis at Google <a href="https://ai.google/research/pubs/pub46576">Sadowski et al. 2018</a></p>
+<h2 id="proving-termination-3">Proving Termination</h2>
 <p align="center">
-<img src="img/intro-google.png" height=220px style="-webkit-filter: drop-shadow(5px 5px 5px #222); filter: drop-shadow(5px 5px 5px #222);"/>
+<img src="img/falling-termination.jpg" height=175px/>
 </p>
+<p><strong>Termination: A well founded metric decreases at each recursive call</strong></p>
+<p>Metric gets <em>strictly smaller</em> and has a <em>lower-bound</em></p>
+<p><em>e.g. 99 bottles, 98 bottles, ..., 0 bottles!</em></p>
 </div>
 <div id="slide-10" class="slide">
-<h2 id="analysis-influences-programs-design-4">Analysis Influences Program's Design</h2>
+<h2 id="example-proving-termination-of-sum-1">Example: Proving Termination of <code>sum</code></h2>
 <p><br></p>
-<p>Infer Analysis at Facebook <a href="https://research.fb.com/popl-2019-most-influential-paper-award-for-research-that-led-to-facebook-infer/">Calcagno et al. 2018</a></p>
-<p align="center">
-<img src="img/intro-fb.png" height=250px style="-webkit-filter: drop-shadow(5px 5px 5px #222); filter: drop-shadow(5px 5px 5px #222);"/>
-</p>
+<div id="program-pane-2" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-2" class="programbox">sum' :: Int -> Int
+sum' 0 = 0
+sum' n = n + sum (n - 1)</div>
+</div>
+
+<p><strong>Default Metric</strong></p>
+<p><em>First</em> <code>Int</code> parameter</p>
+<p><strong>Exercise:</strong> Always gets smaller, but what's the <em>lower bound</em>?</p>
 </div>
 <div id="slide-11" class="slide">
-<h2 id="programmers-analysis-verification-1">Program<em>mer's</em> Analysis &amp; Verification</h2>
-<p align="center">
-<img src="img/intro2.png" height=330px/>
-</p>
+<h2 id="user-specified-termination-metrics">User Specified Termination Metrics</h2>
+<p><br></p>
+<p>The first <code>Int</code> need not always be decreasing!</p>
 </div>
 <div id="slide-12" class="slide">
-<h2 id="program-influences-analysis-abilities">Program Influences Analysis' Abilities</h2>
-<p align="center">
-<img src="img/intro-out0.png" height=330px/>
-</p>
+<h2 id="user-specified-termination-metrics-1">User Specified Termination Metrics</h2>
+<p><br></p>
+<p>The first <code>Int</code> need not always be decreasing!</p>
+<div id="program-pane-3" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-3" class="programbox">{-@ fastSum :: Int -> Int -> Int @-}
+fastSum total 0 = total
+fastSum total n = fastSum (total + n) (n - 1)</div>
+</div>
+
+<p><strong>Exercise:</strong> Can you specify metric as an expression over the inputs?</p>
 </div>
 <div id="slide-13" class="slide">
-<h2 id="program-influences-analysis-abilities-1">Program Influences Analysis' Abilities</h2>
-<p align="center">
-<img src="img/intro-out1.png" height=330px/>
-</p>
+<h2 id="user-specified-termination-metrics-2">User Specified Termination Metrics</h2>
+<p><br></p>
+<p><strong>Specify metric as an expression over the inputs</strong></p>
+<div id="program-pane-4" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-4" class="programbox">{-@ range :: lo:Int -> hi:Int -> [Int] @-}
+range lo hi
+  | lo < hi   = lo : range (lo + 1) hi
+  | otherwise = []</div>
+</div>
+
+<p><strong>Exercise:</strong> What metric proves <code>range</code> terminates?</p>
 </div>
 <div id="slide-14" class="slide">
-<h2 id="language-integrated-verification-live">Language Integrated Verification (LIVE)</h2>
-<p align="center">
-<img src="img/intro2.png" height=260px/>
-</p>
+<h2 id="proving-termination-4">Proving Termination</h2>
 <p><br></p>
-<p>This tutorial: <strong>LIVE with Refinement Types</strong></p>
+<p><strong>Type Checker Verifies</strong></p>
+<p>A well founded metric decreases at each recursive call.</p>
+<p><br></p>
+<p>Either <em>first</em> <code>Int</code> parameter (default)</p>
+<p>or</p>
+<p><strong>User specified metric</strong></p>
 </div>
 <div id="slide-15" class="slide">
-<h2 id="live-with-refinement-types">LIVE with Refinement Types</h2>
+<h2 id="lexicographic-termination">Lexicographic Termination</h2>
 <p><br></p>
-<p><strong>Tutorial Goals</strong></p>
-<p><br></p>
-<p>Why and how to <em>use</em> Refinement Types</p>
-<p><br></p>
-<p>How to <em>implement</em> Refinement Types</p>
+<p>Why does <a href="https://en.wikipedia.org/wiki/Ackermann_function">Ackermann Function</a> terminate?</p>
+<div id="program-pane-5" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-5" class="programbox">{-@ ack :: m:Int -> n:Int -> Int @-}
+ack 0 n = n + 1
+ack m 0 = ack (m - 1) 1
+ack m n = ack (m - 1) (ack m (n - 1))</div>
+</div>
+
+<p>First argument <code>m</code> decreases <em>or</em> second argument <code>n</code> decreases.</p>
+<p><strong>Specify lexicographically ordered sequence of termination metrics</strong> <code>[m, n]</code></p>
 </div>
 <div id="slide-16" class="slide">
+<h2 id="how-about-data-types">How About Data Types?</h2>
+<p><br></p>
+<p>Why does <code>append</code> terminate?</p>
+<div id="program-pane-6" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-6" class="programbox">append           :: [a] -> [a] -> [a]
+append []     ys = ys
+append (x:xs) ys = x : append xs ys</div>
+</div>
+
+<p><strong>Recursive Calls on Smaller Lists</strong></p>
+<p>Default Metric: First parameter with <em>associated size</em></p>
+</div>
+<div id="slide-17" class="slide">
+<h2 id="user-specified-metrics-on-data-types">User specified metrics on Data Types</h2>
+<p><br></p>
+<p>Why <em>does</em> <code>merge</code> terminate?</p>
+<div id="program-pane-7" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-7" class="programbox">{-@ merge :: xs:[a] -> ys:[a] -> [a] / [len xs + len ys] @-}
+merge (x:xs) (y:ys)
+  | x < y           = x : merge xs (y : ys)
+  | otherwise       = y : merge ys (x : xs)
+merge xs []         = xs
+merge [] ys         = ys</div>
+</div>
+
+<p><strong>Exercise:</strong> The default is insufficient. What is a suitable metric?</p>
+</div>
+<div id="slide-18" class="slide">
+<h2 id="termination-can-be-tricky">Termination Can be Tricky</h2>
+<p><br></p>
+<p><strong>Exercise:</strong> What's going on with this merge-<code>sort</code>? Can you fix it?</p>
+<div id="program-pane-8" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-8" class="programbox">sort :: Ord a => [a] -> [a]
+sort []      = []
+sort xs      = let (ys, zs) = split xs 
+               in 
+                 merge (sort ys) (sort zs)
+
+
+split :: [a] -> ([a], [a])
+split (x:y:zs) = let (xs, ys) = split zs in 
+                     (x:xs, y:ys) 
+split xs       = (xs, [])</div>
+</div>
+
+</div>
+<div id="slide-19" class="slide">
+<h2 id="avoiding-infinite-loops-1">Avoiding Infinite Loops</h2>
+<p><br></p>
+<p><strong>Type Check Termination</strong></p>
+<p>Some well founded metric decreases at each recursive call.</p>
+</div>
+<div id="slide-20" class="slide">
+<h2 id="avoiding-infinite-loops-2">Avoiding Infinite Loops</h2>
+<p><br></p>
+<p><strong>Type Check Termination</strong></p>
+<p>Some well founded metric decreases at each recursive call.</p>
+<p><br></p>
+<p>First <code>Int</code> or <em>sized</em> parameter (default), <em>or</em></p>
+</div>
+<div id="slide-21" class="slide">
+<h2 id="avoiding-infinite-loops-3">Avoiding Infinite Loops</h2>
+<p><br></p>
+<p><strong>Type Check Termination</strong></p>
+<p>Some well founded metric decreases at each recursive call.</p>
+<p><br></p>
+<p>First <code>Int</code> or <em>sized</em> parameter (default), <em>or</em></p>
+<p>User specified (lexicographic) metric, <em>or</em></p>
+</div>
+<div id="slide-22" class="slide">
+<h2 id="avoiding-infinite-loops-4">Avoiding Infinite Loops</h2>
+<p><br></p>
+<p><strong>Type Check Termination</strong></p>
+<p>Some well founded metric decreases at each recursive call.</p>
+<p><br></p>
+<p>First <code>Int</code> or <em>sized</em> parameter (default), <em>or</em></p>
+<p>User specified (lexicographic) metric, <em>or</em></p>
+<p>The function is marked <code>lazy</code> (non-terminating).</p>
+</div>
+<div id="slide-23" class="slide">
+<h2 id="avoiding-infinite-loops-is-easy-in-practice">Avoiding Infinite Loops is Easy (in Practice)</h2>
+<p><br></p>
+<div class="hidden">
+<h2 id="avoiding-infinite-loops-is-easy-in-practice-1">Avoiding Infinite Loops is Easy (in Practice)</h2>
+<div align="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Library</strong></th>
+<th style="text-align: right;"><strong>LOC</strong></th>
+<th style="text-align: right;"><strong>Specs</strong></th>
+<th style="text-align: right;"><strong>Time</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>XMonad.StackSet</code></td>
+<td style="text-align: right;">256</td>
+<td style="text-align: right;">74</td>
+<td style="text-align: right;">27s</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>Data.List</code></td>
+<td style="text-align: right;">814</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">26s</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>Data.Set.Splay</code></td>
+<td style="text-align: right;">149</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">27s</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>Data.Vector.Algorithms</code></td>
+<td style="text-align: right;">1219</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">61s</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>Data.Map.Base</code></td>
+<td style="text-align: right;">1396</td>
+<td style="text-align: right;">125</td>
+<td style="text-align: right;">68s</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>Data.Text</code></td>
+<td style="text-align: right;">3128</td>
+<td style="text-align: right;">305</td>
+<td style="text-align: right;">231s</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>Data.Bytestring</code></td>
+<td style="text-align: right;">3505</td>
+<td style="text-align: right;">307</td>
+<td style="text-align: right;">136s</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Total</strong></td>
+<td style="text-align: right;"><strong>11512</strong></td>
+<td style="text-align: right;"><strong>977</strong></td>
+<td style="text-align: right;"><strong>574s</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="slide-24" class="slide">
+<h2 id="avoiding-infinite-loops-is-easy-in-practice-2">Avoiding Infinite Loops is Easy (in Practice)</h2>
+<p><br></p>
+<p><strong><code>503</code> Recursive Functions</strong></p>
+<p><code>67%</code> via default metrics vs <code>30%</code> user given metrics</p>
+<p><code>1</code> metric per <code>100</code> LOC</p>
+</div>
+<div id="slide-25" class="slide">
+<h2 id="avoiding-infinite-loops-is-easy-in-practice-3">Avoiding Infinite Loops is Easy (in Practice)</h2>
+<p><br></p>
+<p><strong><code>503</code> Recursive Functions</strong></p>
+<p><code>67%</code> via default metrics vs <code>30%</code> user given metrics</p>
+<p><code>1</code> metric per <code>100</code> LOC</p>
+<p><strong><code>20</code> functions <em>not proven</em> to terminate</strong></p>
+<p><code>12</code> <em>do not</em> terminate (e.g. top-level <code>IO</code> loops)</p>
+<p><code>8</code> currently <em>outside scope</em> of type checker</p>
+</div>
+<div id="slide-26" class="slide">
 <h2 id="plan">Plan</h2>
 <p><br></p>
-<p><strong>Part I:</strong> <strong><a href="02-refinements.html">Refinements 101</a></strong></p>
+<p><strong>Part I:</strong> <a href="02-refinements.html">Refinements 101</a></p>
 <p>Case Study: <a href="03-example-vectors.html">Vector Bounds</a></p>
 <p><strong>Part II:</strong> <a href="04-data-properties.html">Properties of Structures</a></p>
 <p>Case Study: <a href="05-example-sort.html">Sorting</a>, <a href="06-example-interpreter.html">Interpreter</a></p>
 <p><strong>Part III:</strong> <a href="07-data-legal.html">Invariants of Data Structures</a></p>
-<p>Case Study: <a href="08-example-sort.html">Sorting actually Sorts Lists</a></p>
-<p><strong>Part IV:</strong> <a href="09-termination.html">Termination</a> and <a href="10-reflection.html">Correctness Proofs</a></p>
+<p>Case Study: <a href="08-example-sort.html">Sorting actually Sorts</a></p>
+<p><strong>Part IV:</strong> <a href="09-termination.html">Termination</a> and <strong><a href="10-reflection.html">Correctness Proofs</a></strong></p>
 <p>Case Study: <a href="11-example-opt.html">Optimizing Arithmetic Expressions</a></p>
 </div>
 

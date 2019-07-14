@@ -401,149 +401,710 @@ MathJax.Hub.Config({
     <span class="glyphicon glyphicon-play"></span>
   </button>
  
-  <div id="program-0" class="programbox">module Intro where
+  <div id="program-0" class="programbox">{-# LANGUAGE TupleSections #-}
+{-@ LIQUID "--no-warnings" @-}
+{-@ LIQUID "--short-names" @-}
+{-@ LIQUID "--reflection"  @-}
+{-@ LIQUID "--ple"         @-}
 
-dummy :: Int
-dummy = 7</div>
+-- Hidden code
+
+module Reflection where
+-- import Language.Haskell.Liquid.ProofCombinators
+import Prelude hiding (sum, (++))
+
+sum        :: Int -> Int
+sillyProof :: Int -> Int -> ()
+appendPf   :: [a] -> [a] -> [a] -> ()
+thm_sum    :: Int -> Int
+
+{-@ infix   ++ @-}
+{-@ reflect ++ @-}
+
+
+infixl 3 ===
+{-@ (===) :: x:a -> y:{a | y == x} -> {v:a | v == x && v == y} @-}
+(===) :: a -> a -> a
+_ === y  = y
+
+infixl 3 ?
+
+{-@ (?) :: forall a b <pa :: a -> Bool, pb :: b -> Bool>. a<pa> -> b<pb> -> a<pa> @-}
+(?) :: a -> b -> a 
+x ? _ = x 
+{-# INLINE (?)   #-} 
+
+by = (?)
+
+{-
+
+thm_sum 0 = 2 * sum 0
+        === 0 * (0+1)
+        
+thm_sum n = 2 * sum n
+        === 2 * (n + sum (n-1))
+        === 2 * n + 2 * sum (n-1)
+          ? thm_sum (n-1)
+        === n * (n+1)
+
+{-@ thm :: AppendAssoc a @-}
+thm :: [a] -> [a] -> [a] -> [a]
+
+thm [] ys zs     = ([] ++ ys) ++ zs
+               === ys ++ zs
+               === [] ++ (ys ++ zs)
+
+thm (x:xs) ys zs = ((x:xs) ++ ys) ++ zs
+               === (x : (xs ++ ys)) ++ zs 
+               ===  x : ((xs ++ ys) ++ zs)
+                 ? thm xs ys zs
+               ===  x : (xs ++ (ys ++ zs)) 
+               === (x : xs) ++ (ys ++ zs)
+-}</div>
 </div>
 
-</div>
-<div class="slide">
-<p><br> <br> <br></p>
-<p align="center">
-<h1 style="border-bottom:none">
-Verification with Refinement Types
-</h1>
-<p><br></p>
-<h4 style="border-bottom:none">
-<font color="#1569C7">Ranjit Jhala</font>
-</h4>
-<p><br></p>
-<h4 style="border-bottom:none">
-<font color="green"> UC San Diego &amp; AWS/ARG </font>
-</h4>
-</p>
 </div>
 <div id="slide-0" class="slide">
-<h2 id="awsarg">AWS/ARG</h2>
+<h2 id="types-as-propositions-programs-as-proofs">Types as Propositions, Programs as Proofs</h2>
 <p align="center">
-<img src="img/arg_intern_add.jpeg" height=280px/>
+<img src="img/escher-drawing-hands.jpg" height=300px/>
 </p>
+<p><strong>A (Terminating) Program is a Proof</strong></p>
+<p>Classic Idea <a href="https://en.wikipedia.org/wiki/Curry–Howard_correspondence">Curry-Howard</a>, <a href="http://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/propositions-as-types.pdf">Propositions As Types</a></p>
 </div>
 <div id="slide-1" class="slide">
-<h2 id="follow-along-at-this-url">Follow Along at This URL</h2>
-<p><br> <br> <br></p>
-<p><a href="http://ranjitjhala.github.io/CAV2019-tutorial/" class="uri">http://ranjitjhala.github.io/CAV2019-tutorial/</a></p>
+<h2 id="types-as-propositions">Types As Propositions</h2>
 <p><br></p>
-<p><strong>Zoom in</strong> to see nav arrows</p>
+<p>The Refined <em>Type</em> ...</p>
+<p><span class="math display">\[\reft{v}{b}{P}\]</span></p>
+<p>... corresponds to the <em>Proposition</em></p>
+<p><span class="math display">\[\mathit{P}\]</span></p>
 </div>
 <div id="slide-2" class="slide">
-<h2 id="program-analysis-verification">Program Analysis &amp; Verification</h2>
-<p><br> <br> <br> <br></p>
-<p>Why limited broader impact and adoption?</p>
+<h2 id="types-as-propositions-example">Types as Propositions: Example</h2>
+<p><br></p>
+<p>The Refined <em>Type</em> ...</p>
+<div id="program-pane-1" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-1" class="programbox">{-@ type OnePlusOneEqualsTwo = {v:() | 1 + 1 = 2} @-}</div>
+</div>
+
+<p>... corresponds to the <em>Proposition</em></p>
+<p><span class="math display">\[1 + 1 = 2\]</span></p>
 </div>
 <div id="slide-3" class="slide">
-<h2 id="program-analysis-verification-1">Program Analysis &amp; Verification</h2>
-<p>Why limited broader impact and adoption?</p>
-<p align="center">
-<img src="img/intro0.png" height=280px/>
-</p>
+<h2 id="programs-as-proofs-example">Programs As Proofs: Example</h2>
+<p><br></p>
+<p>The <em>Program</em> ...</p>
+<div id="program-pane-2" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-2" class="programbox">{-@ easyProof :: OnePlusOneEqualsTwo @-}
+easyProof = ()</div>
+</div>
+
+<p>... corresponds to a <em>Proof</em> that</p>
+<p><span class="math display">\[1 + 1 = 2\]</span></p>
 </div>
 <div id="slide-4" class="slide">
-<h2 id="program-analysis-verification-2">Program Analysis &amp; Verification</h2>
-<p>Why limited broader impact and adoption?</p>
-<p align="center">
-<img src="img/intro1.png" height=280px/>
-</p>
+<h2 id="types-as-propositions-1">Types as Propositions</h2>
+<p><br></p>
+<p>The Refined <em>Type</em> ...</p>
+<p><span class="math display">\[\bindx{n}{\Nat} \rightarrow \reft{v}{b}{P(n)}\]</span></p>
+<p>... corresponds to the <em>Proposition</em></p>
+<p><span class="math display">\[\forall n \in \Nat.\ P(n)\]</span></p>
 </div>
 <div id="slide-5" class="slide">
-<h2 id="programmers-analysis-verification">Program<em>mer's</em> Analysis &amp; Verification</h2>
-<p align="center">
-<img src="img/intro2.png" height=330px/>
-</p>
+<h2 id="types-as-propositions-example-1">Types as Propositions: Example</h2>
+<p><br></p>
+<p>The Refined <em>Type</em> ...</p>
+<div id="program-pane-3" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-3" class="programbox">{-@ type PlusCommutes = n:Int -> m:Int -> { n + m = m + n } @-}</div>
+</div>
+
+<p>... corresponds to the <em>Proposition</em></p>
+<p><span class="math display">\[\forall n, m.\ n + m = m + n\]</span></p>
 </div>
 <div id="slide-6" class="slide">
-<h2 id="analysis-influences-programs-design">Analysis Influences Program's Design</h2>
-<p align="center">
-<img src="img/intro-fp0.png" height=330px/>
-</p>
+<h2 id="programs-as-proofs-example-1">Programs As Proofs: Example</h2>
+<p><br></p>
+<p>The <em>Program</em> ...</p>
+<div id="program-pane-4" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-4" class="programbox">{-@ sillyProof :: PlusCommutes @-}
+sillyProof n m = ()</div>
+</div>
+
+<p>... corresponds to a <em>Proof</em> that</p>
+<p><span class="math display">\[\forall n, m.\ n + m = m + n\]</span></p>
 </div>
 <div id="slide-7" class="slide">
-<h2 id="analysis-influences-programs-design-1">Analysis Influences Program's Design</h2>
+<h2 id="types-as-propositions-programs-as-proofs-1">Types as Propositions, Programs as Proofs</h2>
+<p><br></p>
 <p align="center">
-<img src="img/intro-fp1.png" height=330px/>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;"><strong>Code</strong></th>
+<th style="text-align: center;"></th>
+<th style="text-align: left;"><strong>Math</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">Types</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Propositions</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Programs</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Proofs</td>
+</tr>
+</tbody>
+</table>
 </p>
 </div>
 <div id="slide-8" class="slide">
-<h2 id="analysis-influences-programs-design-2">Analysis Influences Program's Design</h2>
+<h2 id="those-proofs-were-boring">Those Proofs were Boring</h2>
 <p><br></p>
-<p>Uber NullAway <a href="https://eng.uber.com/nullaway/">Sridharan et al.</a></p>
-<p align="center">
-<img src="img/intro-uber.png" height=220px style="-webkit-filter: drop-shadow(5px 5px 5px #222); filter: drop-shadow(5px 5px 5px #222);"/>
-</p>
+<p><strong>Simple Arithmetic</strong></p>
+<p>Automatically proved by SMT Solver</p>
 </div>
 <div id="slide-9" class="slide">
-<h2 id="analysis-influences-programs-design-3">Analysis Influences Program's Design</h2>
+<h2 id="those-proofs-were-boring-1">Those Proofs were Boring</h2>
 <p><br></p>
-<p>Static Analysis at Google <a href="https://ai.google/research/pubs/pub46576">Sadowski et al. 2018</a></p>
-<p align="center">
-<img src="img/intro-google.png" height=220px style="-webkit-filter: drop-shadow(5px 5px 5px #222); filter: drop-shadow(5px 5px 5px #222);"/>
-</p>
+<p><strong>Simple Arithmetic</strong></p>
+<p>Automatically proved by SMT Solver</p>
+<p><br></p>
+<p><strong>How about proofs about user-defined functions?</strong></p>
+<p>Beyond automatic SMT, but the user can <em>write proofs</em></p>
 </div>
 <div id="slide-10" class="slide">
-<h2 id="analysis-influences-programs-design-4">Analysis Influences Program's Design</h2>
-<p><br></p>
-<p>Infer Analysis at Facebook <a href="https://research.fb.com/popl-2019-most-influential-paper-award-for-research-that-led-to-facebook-infer/">Calcagno et al. 2018</a></p>
-<p align="center">
-<img src="img/intro-fb.png" height=250px style="-webkit-filter: drop-shadow(5px 5px 5px #222); filter: drop-shadow(5px 5px 5px #222);"/>
-</p>
+<h2 id="theorems-about-functions">Theorems about Functions</h2>
+<div id="program-pane-5" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-5" class="programbox">{-@ reflect sum @-}
+{-@ sum :: n:Nat -> Int @-}
+sum 0 = 0
+sum n = n + sum (n-1)</div>
+</div>
+
+<p><strong>How can we prove the the theorems</strong></p>
+<p><span class="math inline">\(\mathit{sum}(1) = 1\)</span>,</p>
+<p><span class="math inline">\(\mathit{sum}(2) = 3\)</span>,</p>
+<p><span class="math inline">\(\mathit{sum}(3) = 6\)</span>.</p>
 </div>
 <div id="slide-11" class="slide">
-<h2 id="programmers-analysis-verification-1">Program<em>mer's</em> Analysis &amp; Verification</h2>
-<p align="center">
-<img src="img/intro2.png" height=330px/>
-</p>
+<h2 id="refinement-reflection">Refinement Reflection</h2>
+<p><br></p>
+<p>The <em>annotation</em></p>
+<pre class="spec"><code>{-@ reflect sum @-}
+</code></pre>
+<p>Automatically gives <code>sum</code> the <em>type</em></p>
+<pre class="spec"><code>sum :: n:Int -&gt; {v:Int | v = if n == 0 then 0 else n + sum (n-1)}
+</code></pre>
+<p>... but <code>sum</code> is <strong>uninterpreted</strong> in the refinement logic.</p>
 </div>
 <div id="slide-12" class="slide">
-<h2 id="program-influences-analysis-abilities">Program Influences Analysis' Abilities</h2>
-<p align="center">
-<img src="img/intro-out0.png" height=330px/>
-</p>
+<h2 id="reflect-function-into-output-type">Reflect Function into Output Type</h2>
+<p><br></p>
+<p><strong>The type of <code>sum</code> connects <em>implementation</em> and <em>specification</em></strong></p>
+<pre class="spec"><code>sum :: n:Int -&gt; {v:Int | v = if n == 0 then 0 else n + sum (n-1)}
+</code></pre>
+<p>... but <code>sum</code> is <strong>uninterpreted</strong> in the refinement logic.</p>
 </div>
 <div id="slide-13" class="slide">
-<h2 id="program-influences-analysis-abilities-1">Program Influences Analysis' Abilities</h2>
-<p align="center">
-<img src="img/intro-out1.png" height=330px/>
-</p>
+<h2 id="reflect-function-into-output-type-1">Reflect Function into Output Type</h2>
+<p><br></p>
+<p>The type of <code>sum</code> connects <em>implementation</em> and <em>specification</em></p>
+<pre class="spec"><code>sum :: n:Int -&gt; {v:Int | v = if n == 0 then 0 else n + sum (n-1)}
+</code></pre>
+<p><br></p>
+<p><strong>Key Idea</strong></p>
+<p>Calling <code>sum n</code> <em>reveals definition</em> at <code>n</code> to the type checker.</p>
 </div>
 <div id="slide-14" class="slide">
-<h2 id="language-integrated-verification-live">Language Integrated Verification (LIVE)</h2>
-<p align="center">
-<img src="img/intro2.png" height=260px/>
-</p>
-<p><br></p>
-<p>This tutorial: <strong>LIVE with Refinement Types</strong></p>
+<h2 id="reflection-at-result-type">Reflection at Result Type</h2>
+<br>
+<div id="program-pane-6" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-6" class="programbox">{-@ sum3 :: _ -> { sum 3 == 6 } @-}
+sum3 _ = let s0 = sum 0   -- s0 :: {sum 0 = 0        }
+             s1 = sum 1   -- s1 :: {sum 1 = 1 + sum 0}
+             s2 = sum 2   -- s2 :: {sum 2 = 2 + sum 1}
+             s3 = sum 3   -- s3 :: {sum 3 = 3 + sum 2}
+         in  ()           -- SMT connects the dots.</div>
+</div>
+
+<p><strong>Key Idea</strong></p>
+<p>Calling <code>sum n</code> <em>reveals definition</em> at <code>n</code> to the type checker.</p>
 </div>
 <div id="slide-15" class="slide">
-<h2 id="live-with-refinement-types">LIVE with Refinement Types</h2>
+<h2 id="structuring-proofs-as-calculations">Structuring Proofs as Calculations</h2>
 <p><br></p>
-<p><strong>Tutorial Goals</strong></p>
+<p>Using combinators from <a href="https://github.com/ucsd-progsys/liquidhaskell/blob/develop/include/Language/Haskell/Liquid/ProofCombinators.hs#L97-L100"><code>ProofCombinators</code></a></p>
 <p><br></p>
-<p>Why and how to <em>use</em> Refinement Types</p>
-<p><br></p>
-<p>How to <em>implement</em> Refinement Types</p>
+<pre class="spec"><code>(===) :: x:a -&gt; y:{a | y == x} -&gt; {v:a|v == x &amp;&amp; v == y}
+</code></pre>
+<p><em>Require</em> both sides are equal, <em>Ensure</em> result is equal to both</p>
 </div>
 <div id="slide-16" class="slide">
+<h2 id="structuring-proofs-as-calculations-1">Structuring Proofs as Calculations</h2>
+<p><br></p>
+<p>Using combinators from <a href="https://github.com/ucsd-progsys/liquidhaskell/blob/develop/include/Language/Haskell/Liquid/ProofCombinators.hs#L97-L100"><code>ProofCombinators</code></a></p>
+<p><br></p>
+<div id="program-pane-7" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-7" class="programbox">{-@ sum3' :: _ -> { sum 3 = 6 } @-}
+sum3' _ =   sum 3
+        === 3 + sum 2
+        === 3 + 2 + sum 1
+        === 3 + 2 + 1 + sum 0
+        === 6</div>
+</div>
+
+</div>
+<div id="slide-17" class="slide">
+<h2 id="types-as-propositions-programs-as-proofs-2">Types as Propositions, Programs as Proofs</h2>
+<p><br></p>
+<p align="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;"><strong>Code</strong></th>
+<th style="text-align: center;"></th>
+<th style="text-align: left;"><strong>Math</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">Types</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Theorems</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Programs</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Proofs</td>
+</tr>
+</tbody>
+</table>
+</p>
+</div>
+<div id="slide-18" class="slide">
+<h2 id="reusing-proofs-functions-as-lemmas">Reusing Proofs: Functions as Lemmas</h2>
+<p><br></p>
+<p><strong>Proofs are functions</strong></p>
+</div>
+<div id="slide-19" class="slide">
+<h2 id="reusing-proofs-functions-as-lemmas-1">Reusing Proofs: Functions as Lemmas</h2>
+<p><br></p>
+<p><strong>Proofs are functions</strong></p>
+<p>Reuse by <em>calling</em> the function</p>
+</div>
+<div id="slide-20" class="slide">
+<h2 id="reusing-proofs-functions-as-lemmas-2">Reusing Proofs: Functions as Lemmas</h2>
+<p><br></p>
+<p><strong>Proofs are functions</strong></p>
+<p>Reuse by <em>calling</em> the function</p>
+<div id="program-pane-8" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-8" class="programbox">{-@ sum4 :: _ -> { sum 4 = 10 } @-}
+sum4 _ =  sum 4
+      === 4 + sum 3
+      === 4 + 6     ?   sum3 ()   -- lemma { sum 3 == 6 }
+      === 10</div>
+</div>
+
+<p><strong><code>?</code> is a library operator (read ``because'')</strong></p>
+<p>Adds the <em>proposition</em> <code>sum3 ()</code> to the <em>known facts</em> (context)</p>
+</div>
+<div id="slide-21" class="slide">
+<h2 id="types-as-propositions-programs-as-proofs-3">Types as Propositions, Programs as Proofs</h2>
+<p><br></p>
+<p align="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;"><strong>Code</strong></th>
+<th style="text-align: center;"></th>
+<th style="text-align: left;"><strong>Math</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">Types</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Theorems</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Programs</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Proofs</td>
+</tr>
+</tbody>
+</table>
+</p>
+</div>
+<div id="slide-22" class="slide">
+<h2 id="types-as-propositions-programs-as-proofs-4">Types as Propositions, Programs as Proofs</h2>
+<p><br></p>
+<p align="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;"><strong>Code</strong></th>
+<th style="text-align: center;"></th>
+<th style="text-align: left;"><strong>Math</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">Types</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Theorems</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Programs</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Proofs</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">Functions</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Lemmas</td>
+</tr>
+</tbody>
+</table>
+</p>
+</div>
+<div id="slide-23" class="slide">
+<h2 id="proof-by-logical-evaluation">Proof by Logical Evaluation</h2>
+<p><br></p>
+<p><strong>Long chains of calculations are tedious</strong></p>
+</div>
+<div id="slide-24" class="slide">
+<h2 id="proof-by-logical-evaluation-1">Proof by Logical Evaluation</h2>
+<p><br></p>
+<p><strong>Long chains of calculations are tedious</strong></p>
+<p>Make the machine do the hard work!</p>
+<p>An algorithm to <a href="https://arxiv.org/abs/1711.03842">emulate computation inside SMT logic</a></p>
+</div>
+<div id="slide-25" class="slide">
+<h2 id="proof-by-logical-evaluation-2">Proof by Logical Evaluation</h2>
+<p><br></p>
+<p><strong>Long chains of calculations are tedious</strong></p>
+<p>Make the machine do the hard work!</p>
+<p>An algorithm to <a href="https://arxiv.org/abs/1711.03842">emulate computation inside SMT logic</a></p>
+<div id="program-pane-9" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-9" class="programbox">{-@ sum3auto :: _ -> { sum 3 = 6 }  @-}
+sum3auto _ = ()
+
+{-@ sum4auto :: _ -> { sum 4 = 10 } @-}
+sum4auto _ = ()</div>
+</div>
+
+</div>
+<div id="slide-26" class="slide">
+<h2 id="proof-by-induction">Proof by Induction</h2>
+<p><br></p>
+<p>Lets prove the theorem</p>
+<p><span class="math display">\[\forall n.\ \sum_{i = 0}^n i = \frac{n \times (n + 1)}{2}\]</span></p>
+</div>
+<div id="slide-27" class="slide">
+<h2 id="proof-by-induction-1">Proof by Induction</h2>
+<p><br></p>
+<p>Lets prove the theorem</p>
+<p><span class="math display">\[\forall n.\ \sum_{i = 0}^n i = \frac{n \times (n + 1)}{2}\]</span></p>
+<p>that is</p>
+<p><span class="math display">\[\forall n \in \Nat.\ 2 \times \mathit{sum}(n) = n \times (n + 1)\]</span></p>
+</div>
+<div id="slide-28" class="slide">
+<h2 id="proof-by-induction-2">Proof by Induction</h2>
+<p><span class="math display">\[\forall n \in \Nat.\ 2 \times \mathit{sum}(n) = n \times (n + 1)\]</span></p>
+<div id="program-pane-10" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-10" class="programbox">{-@ thm_sum :: n:Nat -> { 2 * sum n = n * (n+1) } @-}
+thm_sum _ = undefined </div>
+</div>
+
+<p><strong>Exercise:</strong> Lets complete the proof!</p>
+</div>
+<div id="slide-29" class="slide">
+<h2 id="types-as-propositions-programs-as-proofs-5">Types as Propositions, Programs as Proofs</h2>
+<p><br></p>
+<p align="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;"><strong>Code</strong></th>
+<th style="text-align: center;"></th>
+<th style="text-align: left;"><strong>Math</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">Types</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Theorems</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Programs</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Proofs</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">Functions</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Lemmas</td>
+</tr>
+</tbody>
+</table>
+</p>
+</div>
+<div id="slide-30" class="slide">
+<h2 id="types-as-propositions-programs-as-proofs-6">Types as Propositions, Programs as Proofs</h2>
+<p><br></p>
+<p align="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;"><strong>Code</strong></th>
+<th style="text-align: center;"></th>
+<th style="text-align: left;"><strong>Math</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">Types</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Theorems</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Programs</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Proofs</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">Functions</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Lemmas</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Branches</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Case-Splits</td>
+</tr>
+</tbody>
+</table>
+</p>
+</div>
+<div id="slide-31" class="slide">
+<h2 id="types-as-propositions-programs-as-proofs-7">Types as Propositions, Programs as Proofs</h2>
+<p><br></p>
+<p align="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;"><strong>Code</strong></th>
+<th style="text-align: center;"></th>
+<th style="text-align: left;"><strong>Math</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">Types</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Theorems</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Programs</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Proofs</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">Functions</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Lemmas</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Branches</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Case-Splits</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">Recursion</td>
+<td style="text-align: center;">is</td>
+<td style="text-align: left;">Induction</td>
+</tr>
+</tbody>
+</table>
+</p>
+</div>
+<div id="slide-32" class="slide">
+<h2 id="theorems-about-data">Theorems about Data</h2>
+<p>Recall the list append function:</p>
+<div id="program-pane-11" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-11" class="programbox">(++)        :: [a] -> [a] -> [a]
+[]     ++ ys = ys
+(x:xs) ++ ys = x : (xs ++ ys)</div>
+</div>
+
+<p>Lets prove that the operator is <em>associative</em></p>
+<div id="program-pane-12" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-12" class="programbox">{-@ type AppendAssoc a = xs:[a] -> ys:[a] -> zs:[a] -> 
+                          {(xs ++ ys) ++ zs = xs ++ (ys ++ zs)} 
+  @-}</div>
+</div>
+
+</div>
+<div id="slide-33" class="slide">
+<h2 id="theorems-about-data-associativity-of-append">Theorems about Data: Associativity of <code>append</code></h2>
+<p><br></p>
+<p>Lets write fill in a <em>calculational</em> proof:</p>
+<div id="program-pane-13" class="welleditor" style="background:#fff; position:relative">
+
+  <!-- Verify Source -->
+  <button class="btn btn-xs btn-link actbutton" type="button" style="z-index:1"
+          ng-show="isUnknown" ng-click="verifySource()">
+    <span class="glyphicon glyphicon-play"></span>
+  </button>
+ 
+  <div id="program-13" class="programbox">{-@ appendPf :: AppendAssoc a @-}
+appendPf xs ys zs = undefined </div>
+</div>
+
+<p><strong>Exercise:</strong> Lets fill the above in!</p>
+</div>
+<div id="slide-34" class="slide">
+<h2 id="types-as-propositions-programs-as-proofs-8">Types as Propositions, Programs as Proofs</h2>
+<p><br></p>
+<p align="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;"><strong>Code</strong></th>
+<th style="text-align: center;"></th>
+<th style="text-align: left;"><strong>Math</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">Types</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Theorems</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Programs</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Proofs</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">Functions</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Lemmas</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Branches</td>
+<td style="text-align: center;">are</td>
+<td style="text-align: left;">Case-Splits</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">Recursion</td>
+<td style="text-align: center;">is</td>
+<td style="text-align: left;">Induction</td>
+</tr>
+</tbody>
+</table>
+</p>
+</div>
+<div id="slide-35" class="slide">
 <h2 id="plan">Plan</h2>
 <p><br></p>
-<p><strong>Part I:</strong> <strong><a href="02-refinements.html">Refinements 101</a></strong></p>
+<p><strong>Part I:</strong> <a href="02-refinements.html">Refinements 101</a></p>
 <p>Case Study: <a href="03-example-vectors.html">Vector Bounds</a></p>
 <p><strong>Part II:</strong> <a href="04-data-properties.html">Properties of Structures</a></p>
 <p>Case Study: <a href="05-example-sort.html">Sorting</a>, <a href="06-example-interpreter.html">Interpreter</a></p>
 <p><strong>Part III:</strong> <a href="07-data-legal.html">Invariants of Data Structures</a></p>
-<p>Case Study: <a href="08-example-sort.html">Sorting actually Sorts Lists</a></p>
+<p>Case Study: <a href="08-example-sort.html">Sorting actually Sorts</a></p>
 <p><strong>Part IV:</strong> <a href="09-termination.html">Termination</a> and <a href="10-reflection.html">Correctness Proofs</a></p>
-<p>Case Study: <a href="11-example-opt.html">Optimizing Arithmetic Expressions</a></p>
+<p>Case Study: <strong><a href="11-example-opt.html">Optimizing Arithmetic Expressions</a></strong></p>
 </div>
 
 </div>
