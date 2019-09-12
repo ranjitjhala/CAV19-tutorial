@@ -446,6 +446,7 @@ MathJax.Hub.Config({
 {-@ LIQUID "--no-warnings" @-}
 {-@ LIQUID "--short-names" @-}
 {-@ LIQUID "--reflection"  @-}
+{-@ LIQUID "--ple"         @-}
 
 -- Hidden code
 
@@ -476,7 +477,7 @@ x ? _ = x
 
 by = (?)
 
-thm_sum :: Int -> Int 
+
 thm_sum 0 = 2 * sum 0
         === 0 * (0+1)
         
@@ -533,7 +534,7 @@ minus x y = x - y</div>
 <div id="slide-2" class="slide">
 <h2 id="types-as-propositions">Types as Propositions</h2>
 <p><br></p>
-<p><strong>The Refined <em>Type</em> ...</strong></p>
+<p>The Refined <em>Type</em> ...</p>
 <div id="program-pane-3" class="welleditor" style="background:#fff; position:relative">
 
   <!-- Verify Source -->
@@ -545,13 +546,13 @@ minus x y = x - y</div>
   <div id="program-3" class="programbox">{-@ type OnePlusOneEqualsTwo = {v:() | 1 + 1 = 2} @-}</div>
 </div>
 
-<p><strong>... corresponds to the <em>Proposition</em></strong></p>
+<p>... corresponds to the <em>Proposition</em></p>
 <p><span class="math display">\[1 + 1 = 2\]</span></p>
 </div>
 <div id="slide-3" class="slide">
 <h2 id="programs-as-proofs">Programs As Proofs</h2>
 <p><br></p>
-<p><strong>The <em>Program</em> ...</strong></p>
+<p>The <em>Program</em> ...</p>
 <div id="program-pane-4" class="welleditor" style="background:#fff; position:relative">
 
   <!-- Verify Source -->
@@ -564,22 +565,22 @@ minus x y = x - y</div>
 easyProof = ()</div>
 </div>
 
-<p><strong>... corresponds to a <em>Proof</em> that</strong></p>
+<p>... corresponds to a <em>Proof</em> that</p>
 <p><span class="math display">\[1 + 1 = 2\]</span></p>
 <p>... as long as the program <em>terminates</em></p>
 </div>
 <div id="slide-4" class="slide">
 <h2 id="types-as-propositions-1">Types as Propositions</h2>
 <p><br></p>
-<p><strong>The Refined <em>Type</em> ...</strong></p>
+<p>The Refined <em>Type</em> ...</p>
 <p><span class="math display">\[\bindx{n}{\Nat} \rightarrow \reft{v}{b}{P(n)}\]</span></p>
-<p><strong>... corresponds to the <em>Proposition</em></strong></p>
+<p>... corresponds to the <em>Proposition</em></p>
 <p><span class="math display">\[\forall n \in \Nat.\ P(n)\]</span></p>
 </div>
 <div id="slide-5" class="slide">
 <h2 id="types-as-propositions-example">Types as Propositions: Example</h2>
 <p><br></p>
-<p><strong>The Refined <em>Type</em> ...</strong></p>
+<p>The Refined <em>Type</em> ...</p>
 <div id="program-pane-5" class="welleditor" style="background:#fff; position:relative">
 
   <!-- Verify Source -->
@@ -591,13 +592,13 @@ easyProof = ()</div>
   <div id="program-5" class="programbox">{-@ type PlusCommutes = n:Int -> m:Int -> { n + m = m + n } @-}</div>
 </div>
 
-<p><strong>... corresponds to the <em>Proposition</em></strong></p>
+<p>... corresponds to the <em>Proposition</em></p>
 <p><span class="math display">\[\forall n, m.\ n + m = m + n\]</span></p>
 </div>
 <div id="slide-6" class="slide">
 <h2 id="programs-as-proofs-example">Programs As Proofs: Example</h2>
 <p><br></p>
-<p><strong>The <em>Program</em> ...</strong></p>
+<p>The <em>Program</em> ...</p>
 <div id="program-pane-6" class="welleditor" style="background:#fff; position:relative">
 
   <!-- Verify Source -->
@@ -610,7 +611,7 @@ easyProof = ()</div>
 sillyProof n m = ()</div>
 </div>
 
-<p><strong>... corresponds to a <em>Proof</em> that</strong></p>
+<p>... corresponds to a <em>Proof</em> that</p>
 <p><span class="math display">\[\forall n, m.\ n + m = m + n\]</span></p>
 <p>Automatically proved by SMT Solver</p>
 </div>
@@ -647,29 +648,25 @@ sum n = n + sum (n-1)</div>
 </div>
 <div id="slide-9" class="slide">
 <h2 id="refinement-reflection">Refinement Reflection</h2>
-<p><strong>Annotation <code>{-@ reflect sum @-}</code> Automatically Generates <em>Postcondition</em></strong></p>
-<pre class="spec"><code>sum :: n:Int -&gt; {v:Int | v = if n == 0 then 0 else n + sum (n-1)}
+<p>The <em>annotation</em></p>
+<pre class="spec"><code>                          {-@ reflect sum @-}
 </code></pre>
+<p>Automatically gives <code>sum</code> the <em>postcondition</em></p>
+<pre class="spec"><code>   sum :: n:Int -&gt; {v:Int | v = if n == 0 then 0 else n + sum (n-1)}
+</code></pre>
+<p>... but <code>sum</code> is <strong>uninterpreted</strong> to the SMT solver</p>
 </div>
 <div id="slide-10" class="slide">
-<h2 id="refinement-reflection-1">Refinement Reflection</h2>
-<p><strong>Annotation <code>{-@ reflect sum @-}</code> Automatically Generates <em>Postcondition</em></strong></p>
+<h2 id="reflect-function-into-output-type">Reflect Function into Output Type</h2>
+<p><br></p>
+<p><strong>The type of <code>sum</code> connects <em>implementation</em> and <em>specification</em></strong></p>
+<p>By converting implementation into postcondition</p>
 <pre class="spec"><code>sum :: n:Int -&gt; {v:Int | v = if n == 0 then 0 else n + sum (n-1)}
 </code></pre>
-<p><strong>BUT <code>sum</code> is Uninterpreted to the SMT solver</strong></p>
-<p>SMT cannot (predictably) reason about arbitrary user-defined functions</p>
+<p><br></p>
+<p><strong>Key Idea:</strong> Calling <code>sum n</code> <em>reveals definition</em> of <code>sum</code> at <code>n</code> to SMT</p>
 </div>
 <div id="slide-11" class="slide">
-<h2 id="refinement-reflection-2">Refinement Reflection</h2>
-<p><strong>Annotation <code>{-@ reflect sum @-}</code> Automatically Generates <em>Postcondition</em></strong></p>
-<pre class="spec"><code>sum :: n:Int -&gt; {v:Int | v = if n == 0 then 0 else n + sum (n-1)}
-</code></pre>
-<p><strong>BUT <code>sum</code> is Uninterpreted to the SMT solver</strong></p>
-<p>SMT cannot (predictably) reason about arbitrary user-defined functions</p>
-<p><strong>Key Idea:</strong></p>
-<p>Calling <code>sum n</code> <em>reveals definition</em> of <code>sum</code> at <code>n</code> to SMT</p>
-</div>
-<div id="slide-12" class="slide">
 <h2 id="reflection-at-result-type">Reflection at Result Type</h2>
 <p><br> Lets prove <code>sum 3 = 6</code> <br></p>
 <div id="program-pane-8" class="welleditor" style="background:#fff; position:relative">
@@ -681,26 +678,24 @@ sum n = n + sum (n-1)</div>
   </button>
  
   <div id="program-8" class="programbox">{-@ sum3 :: _ -> { sum 3 == 6 } @-}
-
-sum3 _ = [ sum 0   -- :: {sum 0 = 0        }
-         , sum 1   -- :: {sum 1 = 1 + sum 0}
-         , sum 2   -- :: {sum 2 = 2 + sum 1}
-         , sum 3   -- :: {sum 3 = 3 + sum 2}
-         ]         -- SMT connects the dots.</div>
+sum3 _ = let s0 = sum 0   -- s0 :: {sum 0 = 0        }
+             s1 = sum 1   -- s1 :: {sum 1 = 1 + sum 0}
+             s2 = sum 2   -- s2 :: {sum 2 = 2 + sum 1}
+             s3 = sum 3   -- s3 :: {sum 3 = 3 + sum 2}
+         in  ()           -- SMT connects the dots.</div>
 </div>
 
-<p><em>Removing</em> any of the above &quot;breaks&quot; the chain of equalities: type error!</p>
+<p><em>Removing</em> any of the above &quot;breaks&quot; the chain of equalities, so: type error!</p>
 </div>
-<div id="slide-13" class="slide">
+<div id="slide-12" class="slide">
 <h2 id="structuring-proofs-as-calculations">Structuring Proofs as Calculations</h2>
-<p><br></p>
-<p><strong>Haskell lets you define nice infix operators</strong></p>
-<pre class="spec"><code>  (===) :: x:a -&gt; y:{a | y == x} -&gt; {v:a|v == x &amp;&amp; v == y}
+<p><br> Haskell lets you define nice infix operators e.g. <br></p>
+<pre class="spec"><code>            (===) :: x:a -&gt; y:{a | y == x} -&gt; {v:a|v == x &amp;&amp; v == y}
 </code></pre>
 <p><strong>Require</strong> both sides are equal</p>
 <p><strong>Ensure</strong> result is equal to both</p>
 </div>
-<div id="slide-14" class="slide">
+<div id="slide-13" class="slide">
 <h2 id="structuring-proofs-as-calculations-1">Structuring Proofs as Calculations</h2>
 <p><br></p>
 <p>The above proof becomes a &quot;calculation&quot;</p>
@@ -715,17 +710,21 @@ sum3 _ = [ sum 0   -- :: {sum 0 = 0        }
  
   <div id="program-9" class="programbox">{-@ sum3' :: _ -> { sum 3 = 6 } @-}
 sum3' _ =   sum 3
+        === 3 + sum 2
+        === 3 + 2 + sum 1
+        === 3 + 2 + 1 + sum 0
         === 6</div>
 </div>
 
 </div>
-<div id="slide-15" class="slide">
+<div id="slide-14" class="slide">
 <h2 id="reusing-proofs-functions-as-lemmas">Reusing Proofs: Functions as Lemmas</h2>
 <p><strong>Proofs are functions</strong></p>
 <p>Reuse by <em>calling</em> the function</p>
 </div>
-<div id="slide-16" class="slide">
+<div id="slide-15" class="slide">
 <h2 id="reusing-proofs-functions-as-lemmas-1">Reusing Proofs: Functions as Lemmas</h2>
+<p><br></p>
 <p><strong>Proofs are functions</strong></p>
 <p>Reuse by <em>calling</em> the function</p>
 <div id="program-pane-10" class="welleditor" style="background:#fff; position:relative">
@@ -739,16 +738,17 @@ sum3' _ =   sum 3
   <div id="program-10" class="programbox">{-@ sum4 :: _ -> { sum 4 = 10 } @-}
 sum4 _ =  sum 4
       === 4 + sum 3
-          -- how to tell typechecker sum: 3 == 6 
+        ?   sum3 ()  -- "tell" typechecker: sum 3 == 6 
       === 10</div>
 </div>
 
 <p><strong><code>?</code> is a library operator (read ``because'')</strong></p>
-<p>Use &quot;lemma&quot; <code>sum3</code> to add <code>sum 3 == 6</code> to the context of <em>known facts</em></p>
+<p>Adds <code>{ sum 3 == 6 }</code> to the context of <em>known facts</em></p>
 </div>
-<div id="slide-17" class="slide">
+<div id="slide-16" class="slide">
 <h2 id="proof-by-induction">Proof by Induction</h2>
-<p><strong>Lets Prove:</strong> <span class="math inline">\(\forall n \in \Nat.\ 2 \times \mathit{sum}(n) = n \times (n + 1)\)</span></p>
+<p>Lets prove the theorem</p>
+<p><span class="math display">\[\forall n \in \Nat.\ 2 \times \mathit{sum}(n) = n \times (n + 1)\]</span></p>
 <div id="program-pane-11" class="welleditor" style="background:#fff; position:relative">
 
   <!-- Verify Source -->
@@ -757,15 +757,15 @@ sum4 _ =  sum 4
     <span class="glyphicon glyphicon-play"></span>
   </button>
  
-  <div id="program-11" class="programbox">{-@ thm_sum :: n:Nat -> { 2 * sum n = n * (n+1) } @-}
-thm_sum n = 2 * sum n 
-         -- Exercise: let's calculate the proof!
-        === n * (n + 1) </div>
+  <div id="program-11" class="programbox">-- {-@ thm_sum :: n:Nat -> { 2 * sum n = n * (n+1) } @-}
+-- thm_sum :: Int -> () 
+-- thm_sum n = undefined</div>
 </div>
 
+<p><strong>Exercise:</strong> Lets calculate the proof!</p>
 </div>
-<div id="slide-18" class="slide">
-<h2 id="writing-proofs-as-programs">Writing Proofs as Programs</h2>
+<div id="slide-17" class="slide">
+<h2 id="programs-as-proofs-1">Programs as Proofs</h2>
 <p><br></p>
 <p align="center">
 <table>
@@ -805,7 +805,7 @@ thm_sum n = 2 * sum n
 </tbody>
 </table>
 </p>
-<p>That it, for more see <a href="http://goto.ucsd.edu/~nvazou/theorem-proving-for-all/">Theorem proving for all, by Vazou et. al.</a></p>
+<p><a href="http://goto.ucsd.edu/~nvazou/theorem-proving-for-all/">That it, for more see this</a></p>
 </div>
 
 </div>
