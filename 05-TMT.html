@@ -667,7 +667,8 @@ sum n = n + sum (n-1)</div>
 <pre class="spec"><code>sum :: n:_ -&gt; {v:_ |v = if n == 0 then 0 else n + sum (n-1)}
 </code></pre>
 <p><br></p>
-<p><strong>Key Idea:</strong> Calling <code>sum n</code> <em>reveals definition</em> of <code>sum</code> at <code>n</code> to SMT</p>
+<p><strong>Key Idea</strong></p>
+<p>Calling <code>sum n</code> <em>reveals definition</em> of <code>sum</code> at <code>n</code> to SMT</p>
 </div>
 <div id="slide-11" class="slide">
 <h2 id="reflection-at-result-type">Reflection at Result Type</h2>
@@ -728,7 +729,6 @@ sum3' _ =   sum 3
 </div>
 <div id="slide-15" class="slide">
 <h2 id="reusing-proofs-functions-as-lemmas-1">Reusing Proofs: Functions as Lemmas</h2>
-<p><br></p>
 <p><strong>Proofs are functions</strong></p>
 <p>Reuse by <em>calling</em> the function</p>
 <div id="program-pane-10" class="welleditor" style="background:#fff; position:relative">
@@ -809,7 +809,7 @@ sum4 _ =  sum 4
 </tbody>
 </table>
 </p>
-<p><a href="http://goto.ucsd.edu/~nvazou/theorem-proving-for-all/">That it, for more see this</a></p>
+<p>That it, for more <a href="http://goto.ucsd.edu/~nvazou/theorem-proving-for-all/">Theorem Proving For All! (Vazou et.al)</a></p>
 </div>
 
 </div>
