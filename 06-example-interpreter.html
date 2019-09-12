@@ -476,22 +476,6 @@ useE (AVal v)     = S.empty
 useE (AVar x)     = S.singleton x
 useE (AAdd e1 e2) = S.union (useE e1) (useE e2)
 
-{-@ measure useS @-}
-useS :: Stmt -> S.Set Var
-useS (Asgn x e)   = useE e 
-useS (If e s1 s2) = S.union (useE e) (S.union (useS s1) (useS s2)) 
-useS (While e s)  = S.union (useE e) (useS s)
-useS (Seq s1 s2)  = S.union (useS s1) (S.difference (useS s2) (defS s1)) 
-useS Skip         = S.empty
-
-{-@ measure defS @-}
-defS :: Stmt -> S.Set Var
-defS (Asgn x e)   = S.singleton x
-defS (If e s1 s2) = S.intersection (defS s1) (defS s2)
-defS (While e s)  = S.empty
-defS (Seq s1 s2)  = S.union (defS s1) (defS s2) 
-defS Skip         = S.empty  
-
 
 -}</div>
 </div>
@@ -499,6 +483,8 @@ defS Skip         = S.empty
 </div>
 <div id="slide-0" class="slide">
 <h2 id="case-study-interpreting-an-imperative-language">Case Study: Interpreting an Imperative Language</h2>
+<p>{-@ measure useS @-} useS :: Stmt -&gt; S.Set Var useS (Asgn x e) = useE e useS (If e s1 s2) = S.union (useE e) (S.union (useS s1) (useS s2)) useS (While e s) = S.union (useE e) (useS s) useS (Seq s1 s2) = S.union (useS s1) (S.difference (useS s2) (defS s1)) useS Skip = S.empty</p>
+<p>{-@ measure defS @-} defS :: Stmt -&gt; S.Set Var defS (Asgn x e) = S.singleton x defS (If e s1 s2) = S.intersection (defS s1) (defS s2) defS (While e s) = S.empty defS (Seq s1 s2) = S.union (defS s1) (defS s2) defS Skip = S.empty</p>
 <p><br> <br></p>
 </div>
 <div id="slide-1" class="slide">
