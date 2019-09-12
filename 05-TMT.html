@@ -490,6 +490,13 @@ thm_sum n = 2 * sum n
 
 </div>
 <div id="slide-0" class="slide">
+<h2 id="demo-writing-proofs-by-writing-programs">Demo: Writing Proofs by Writing Programs</h2>
+<p><br></p>
+<p><strong>Follow along at this URL</strong></p>
+<pre class="spec"><code>https://ranjitjhala.github.io/CAV19-tutorial/05-TMT.html
+</code></pre>
+</div>
+<div id="slide-1" class="slide">
 <h2 id="refinement-types-types-predicates">Refinement Types = <strong>Types</strong> + <strong>Predicates</strong></h2>
 <hr style="height:5px; visibility:hidden;" />
 <p><strong>Example: Natural Numbers</strong></p>
@@ -508,7 +515,7 @@ nats     =  [0, 1, 2, 3]</div>
 </div>
 
 </div>
-<div id="slide-1" class="slide">
+<div id="slide-2" class="slide">
 <h2 id="refinement-types-are-contracts">Refinement Types are Contracts</h2>
 <div id="program-pane-2" class="welleditor" style="background:#fff; position:relative">
 
@@ -530,7 +537,7 @@ minus x y = x - y</div>
 <p><strong>Output Type is a Post-Condition</strong></p>
 <p>Specifies the <em>output</em> value equals the sum/difference of the <em>inputs</em></p>
 </div>
-<div id="slide-2" class="slide">
+<div id="slide-3" class="slide">
 <h2 id="types-as-propositions">Types as Propositions</h2>
 <p><br></p>
 <p><strong>The Refined <em>Type</em> ...</strong></p>
@@ -548,7 +555,7 @@ minus x y = x - y</div>
 <p><strong>... corresponds to the <em>Proposition</em></strong></p>
 <p><span class="math display">\[1 + 1 = 2\]</span></p>
 </div>
-<div id="slide-3" class="slide">
+<div id="slide-4" class="slide">
 <h2 id="programs-as-proofs">Programs As Proofs</h2>
 <p><br></p>
 <p><strong>The <em>Program</em> ...</strong></p>
@@ -568,7 +575,7 @@ easyProof = ()</div>
 <p><span class="math display">\[1 + 1 = 2\]</span></p>
 <p>... as long as the program <em>terminates</em></p>
 </div>
-<div id="slide-4" class="slide">
+<div id="slide-5" class="slide">
 <h2 id="types-as-propositions-1">Types as Propositions</h2>
 <p><br></p>
 <p><strong>The Refined <em>Type</em> ...</strong></p>
@@ -576,7 +583,7 @@ easyProof = ()</div>
 <p><strong>... corresponds to the <em>Proposition</em></strong></p>
 <p><span class="math display">\[\forall n \in \Nat.\ P(n)\]</span></p>
 </div>
-<div id="slide-5" class="slide">
+<div id="slide-6" class="slide">
 <h2 id="types-as-propositions-example">Types as Propositions: Example</h2>
 <p><br></p>
 <p><strong>The Refined <em>Type</em> ...</strong></p>
@@ -594,7 +601,7 @@ easyProof = ()</div>
 <p><strong>... corresponds to the <em>Proposition</em></strong></p>
 <p><span class="math display">\[\forall n, m.\ n + m = m + n\]</span></p>
 </div>
-<div id="slide-6" class="slide">
+<div id="slide-7" class="slide">
 <h2 id="programs-as-proofs-example">Programs As Proofs: Example</h2>
 <p><br></p>
 <p><strong>The <em>Program</em> ...</strong></p>
@@ -614,7 +621,7 @@ sillyProof n m = ()</div>
 <p><span class="math display">\[\forall n, m.\ n + m = m + n\]</span></p>
 <p>Automatically proved by SMT Solver</p>
 </div>
-<div id="slide-7" class="slide">
+<div id="slide-8" class="slide">
 <h2 id="those-proofs-were-boring">Those Proofs were Boring</h2>
 <p><br></p>
 <p><strong>Simple Arithmetic</strong></p>
@@ -623,7 +630,7 @@ sillyProof n m = ()</div>
 <p><strong>How about proofs about user-defined functions?</strong></p>
 <p>Beyond automatic SMT, but user can <em>write proofs as programs</em></p>
 </div>
-<div id="slide-8" class="slide">
+<div id="slide-9" class="slide">
 <h2 id="theorems-about-functions">Theorems about Functions</h2>
 <p><br></p>
 <div id="program-pane-7" class="welleditor" style="background:#fff; position:relative">
@@ -645,13 +652,13 @@ sum n = n + sum (n-1)</div>
 <p><span class="math inline">\(\mathit{sum}(2) = 3\)</span>,</p>
 <p><span class="math inline">\(\mathit{sum}(3) = 6\)</span>.</p>
 </div>
-<div id="slide-9" class="slide">
+<div id="slide-10" class="slide">
 <h2 id="refinement-reflection">Refinement Reflection</h2>
 <p><strong>Annotation <code>{-@ reflect sum @-}</code> Automatically Generates <em>Postcondition</em></strong></p>
 <pre class="spec"><code>sum :: n:Int -&gt; {v:Int | v = if n == 0 then 0 else n + sum (n-1)}
 </code></pre>
 </div>
-<div id="slide-10" class="slide">
+<div id="slide-11" class="slide">
 <h2 id="refinement-reflection-1">Refinement Reflection</h2>
 <p><strong>Annotation <code>{-@ reflect sum @-}</code> Automatically Generates <em>Postcondition</em></strong></p>
 <pre class="spec"><code>sum :: n:Int -&gt; {v:Int | v = if n == 0 then 0 else n + sum (n-1)}
@@ -659,7 +666,7 @@ sum n = n + sum (n-1)</div>
 <p><strong>BUT <code>sum</code> is Uninterpreted to the SMT solver</strong></p>
 <p>SMT cannot (predictably) reason about arbitrary user-defined functions</p>
 </div>
-<div id="slide-11" class="slide">
+<div id="slide-12" class="slide">
 <h2 id="refinement-reflection-2">Refinement Reflection</h2>
 <p><strong>Annotation <code>{-@ reflect sum @-}</code> Automatically Generates <em>Postcondition</em></strong></p>
 <pre class="spec"><code>sum :: n:Int -&gt; {v:Int | v = if n == 0 then 0 else n + sum (n-1)}
@@ -669,7 +676,7 @@ sum n = n + sum (n-1)</div>
 <p><strong>Key Idea:</strong></p>
 <p>Calling <code>sum n</code> <em>reveals definition</em> of <code>sum</code> at <code>n</code> to SMT</p>
 </div>
-<div id="slide-12" class="slide">
+<div id="slide-13" class="slide">
 <h2 id="reflection-at-result-type">Reflection at Result Type</h2>
 <p><br> Lets prove <code>sum 3 = 6</code> <br></p>
 <div id="program-pane-8" class="welleditor" style="background:#fff; position:relative">
@@ -691,7 +698,7 @@ sum3 _ = [ sum 0   -- :: {sum 0 = 0        }
 
 <p><em>Removing</em> any of the above &quot;breaks&quot; the chain of equalities: type error!</p>
 </div>
-<div id="slide-13" class="slide">
+<div id="slide-14" class="slide">
 <h2 id="structuring-proofs-as-calculations">Structuring Proofs as Calculations</h2>
 <p><br></p>
 <p><strong>Haskell lets you define nice infix operators</strong></p>
@@ -700,7 +707,7 @@ sum3 _ = [ sum 0   -- :: {sum 0 = 0        }
 <p><strong>Require</strong> both sides are equal</p>
 <p><strong>Ensure</strong> result is equal to both</p>
 </div>
-<div id="slide-14" class="slide">
+<div id="slide-15" class="slide">
 <h2 id="structuring-proofs-as-calculations-1">Structuring Proofs as Calculations</h2>
 <p><br></p>
 <p>The above proof becomes a &quot;calculation&quot;</p>
@@ -719,12 +726,12 @@ sum3' _ =   sum 3
 </div>
 
 </div>
-<div id="slide-15" class="slide">
+<div id="slide-16" class="slide">
 <h2 id="reusing-proofs-functions-as-lemmas">Reusing Proofs: Functions as Lemmas</h2>
 <p><strong>Proofs are functions</strong></p>
 <p>Reuse by <em>calling</em> the function</p>
 </div>
-<div id="slide-16" class="slide">
+<div id="slide-17" class="slide">
 <h2 id="reusing-proofs-functions-as-lemmas-1">Reusing Proofs: Functions as Lemmas</h2>
 <p><strong>Proofs are functions</strong></p>
 <p>Reuse by <em>calling</em> the function</p>
@@ -746,7 +753,7 @@ sum4 _ =  sum 4
 <p><strong><code>?</code> is a library operator (read ``because'')</strong></p>
 <p>Use &quot;lemma&quot; <code>sum3</code> to add <code>sum 3 == 6</code> to the context of <em>known facts</em></p>
 </div>
-<div id="slide-17" class="slide">
+<div id="slide-18" class="slide">
 <h2 id="proof-by-induction">Proof by Induction</h2>
 <p><strong>Lets Prove:</strong> <span class="math inline">\(\forall n \in \Nat.\ 2 \times \mathit{sum}(n) = n \times (n + 1)\)</span></p>
 <div id="program-pane-11" class="welleditor" style="background:#fff; position:relative">
@@ -764,7 +771,7 @@ thm_sum n = 2 * sum n
 </div>
 
 </div>
-<div id="slide-18" class="slide">
+<div id="slide-19" class="slide">
 <h2 id="writing-proofs-as-programs">Writing Proofs as Programs</h2>
 <p><br></p>
 <p align="center">
