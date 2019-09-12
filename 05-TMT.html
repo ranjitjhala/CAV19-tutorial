@@ -651,13 +651,13 @@ sum n = n + sum (n-1)</div>
 </div>
 <div id="slide-9" class="slide">
 <h2 id="refinement-reflection">Refinement Reflection</h2>
-<p>The <em>annotation</em></p>
-<pre class="spec"><code>    {-@ reflect sum @-}
-</code></pre>
-<p>Automatically gives <code>sum</code> the <em>postcondition</em></p>
+<p><br></p>
+<p><strong>The annotation <code>{-@ reflect sum @-}</code> <em>generates</em> the postcondition</strong></p>
 <pre class="spec"><code>sum :: n:_ -&gt; {v:_ |v = if n == 0 then 0 else n + sum (n-1)}
 </code></pre>
-<p>... but <code>sum</code> is <strong>uninterpreted</strong> to the SMT solver</p>
+<p><br></p>
+<p><strong>But <code>sum</code> is uninterpreted function</strong></p>
+<p>SMT does not &quot;understand&quot; its definition</p>
 </div>
 <div id="slide-10" class="slide">
 <h2 id="reflect-function-into-output-type">Reflect Function into Output Type</h2>
