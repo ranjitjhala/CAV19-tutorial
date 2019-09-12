@@ -651,26 +651,32 @@ sum n = n + sum (n-1)</div>
 </div>
 <div id="slide-9" class="slide">
 <h2 id="refinement-reflection">Refinement Reflection</h2>
-<p><br></p>
+<p><strong>The annotation <code>{-@ reflect sum @-}</code> <em>generates</em> the postcondition</strong></p>
+<pre class="spec"><code>sum :: n:_ -&gt; {v:_ |v = if n == 0 then 0 else n + sum (n-1)}
+</code></pre>
+</div>
+<div id="slide-10" class="slide">
+<h2 id="refinement-reflection-1">Refinement Reflection</h2>
 <p><strong>The annotation <code>{-@ reflect sum @-}</code> <em>generates</em> the postcondition</strong></p>
 <pre class="spec"><code>sum :: n:_ -&gt; {v:_ |v = if n == 0 then 0 else n + sum (n-1)}
 </code></pre>
 <p><br></p>
-<p><strong>But <code>sum</code> is uninterpreted function</strong></p>
+<p><strong>BUT <code>sum</code> is an <em>Uninterpreted</em> function</strong></p>
 <p>SMT does not &quot;understand&quot; its definition</p>
 </div>
-<div id="slide-10" class="slide">
-<h2 id="reflect-function-into-output-type">Reflect Function into Output Type</h2>
-<p><br></p>
-<p><strong>The type of <code>sum</code> connects <em>implementation</em> and <em>specification</em></strong></p>
-<p>By converting implementation into postcondition</p>
+<div id="slide-11" class="slide">
+<h2 id="refinement-reflection-2">Refinement Reflection</h2>
+<p><strong>The annotation <code>{-@ reflect sum @-}</code> <em>generates</em> the postcondition</strong></p>
 <pre class="spec"><code>sum :: n:_ -&gt; {v:_ |v = if n == 0 then 0 else n + sum (n-1)}
 </code></pre>
+<p><br></p>
+<p><strong>BUT <code>sum</code> is an <em>Uninterpreted</em> function</strong></p>
+<p>SMT does not &quot;understand&quot; its definition</p>
 <p><br></p>
 <p><strong>Key Idea</strong></p>
 <p>Calling <code>sum n</code> <em>reveals definition</em> of <code>sum</code> at <code>n</code> to SMT</p>
 </div>
-<div id="slide-11" class="slide">
+<div id="slide-12" class="slide">
 <h2 id="reflection-at-result-type">Reflection at Result Type</h2>
 <p><br> Lets prove <code>sum 3 = 6</code> <br></p>
 <div id="program-pane-8" class="welleditor" style="background:#fff; position:relative">
@@ -692,7 +698,7 @@ sum3 _ = [ sum 0   -- :: {sum 0 = 0        }
 
 <p><em>Removing</em> any of the above &quot;breaks&quot; the chain of equalities, yields type error!</p>
 </div>
-<div id="slide-12" class="slide">
+<div id="slide-13" class="slide">
 <h2 id="structuring-proofs-as-calculations">Structuring Proofs as Calculations</h2>
 <p><br> Haskell lets you define nice infix operators e.g. <br></p>
 <pre class="spec"><code>(===) :: x:a -&gt; y:{a | y == x} -&gt; {v:a|v == x &amp;&amp; v == y}
@@ -700,7 +706,7 @@ sum3 _ = [ sum 0   -- :: {sum 0 = 0        }
 <p><strong>Require</strong> both sides are equal</p>
 <p><strong>Ensure</strong> result is equal to both</p>
 </div>
-<div id="slide-13" class="slide">
+<div id="slide-14" class="slide">
 <h2 id="structuring-proofs-as-calculations-1">Structuring Proofs as Calculations</h2>
 <p><br></p>
 <p>The above proof becomes a &quot;calculation&quot;</p>
@@ -722,12 +728,12 @@ sum3' _ =   sum 3
 </div>
 
 </div>
-<div id="slide-14" class="slide">
+<div id="slide-15" class="slide">
 <h2 id="reusing-proofs-functions-as-lemmas">Reusing Proofs: Functions as Lemmas</h2>
 <p><strong>Proofs are functions</strong></p>
 <p>Reuse by <em>calling</em> the function</p>
 </div>
-<div id="slide-15" class="slide">
+<div id="slide-16" class="slide">
 <h2 id="reusing-proofs-functions-as-lemmas-1">Reusing Proofs: Functions as Lemmas</h2>
 <p><strong>Proofs are functions</strong></p>
 <p>Reuse by <em>calling</em> the function</p>
@@ -749,7 +755,7 @@ sum4 _ =  sum 4
 <p><strong><code>?</code> is a library operator (read ``because'')</strong></p>
 <p>Adds <code>{ sum 3 == 6 }</code> to the context of <em>known facts</em></p>
 </div>
-<div id="slide-16" class="slide">
+<div id="slide-17" class="slide">
 <h2 id="proof-by-induction">Proof by Induction</h2>
 <p>Lets prove the theorem</p>
 <p><span class="math display">\[\forall n \in \Nat.\ 2 \times \mathit{sum}(n) = n \times (n + 1)\]</span></p>
@@ -768,7 +774,7 @@ sum4 _ =  sum 4
 
 <p><strong>Exercise:</strong> Lets calculate the proof!</p>
 </div>
-<div id="slide-17" class="slide">
+<div id="slide-18" class="slide">
 <h2 id="programs-as-proofs-1">Programs as Proofs</h2>
 <p><br></p>
 <p align="center">
